@@ -23,7 +23,7 @@ class MainMenu(tk.Frame):
         background = ImageTk.PhotoImage(resized_img)
         self.canvas.background = background
         self.canvas.create_image(0, 0, anchor=tk.NW, image=background)
-    
+
     def set_buttons(self):
         btn_new_game = tk.Button(text="New Game")
         btn_load_game = tk.Button(text="Load Game")

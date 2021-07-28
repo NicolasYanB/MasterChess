@@ -22,7 +22,7 @@ class Piece:
     def image(self):
         return self._image
 
-    def move(self, new_position):
+    def move_to(self, new_position):
         self._position = new_position
 
     def get_possible_moves(self):
@@ -38,3 +38,25 @@ class Piece:
         if move_column == column and move_line == line:
             return False
         return True
+
+
+class Pawn(Piece):
+    initial_positions = {"white": [(i, 6) for i in range(8)],
+                         "black": [(i, 1) for i in range(8)]}
+
+    def __init__(self, color, position):
+        type = "pawn"
+        super().__init__(type, color, position)
+        self.__direction = -1 if color == "white" else 1
+
+    def get_possible_moves(self):
+        column, line = self._position
+        moves = []
+        normal_move = column, line + self.__direction
+        double_square_move = column, line + self.__direction * 2
+        captures = [(column + i, line + self.__direction) for i in (1, -1)]
+        moves += [capture for capture in captures if self._is_possible(capture)]
+        moves.append(normal_move) if self._is_possible(normal_move) else 0
+        if not self.moved:
+            moves.append(double_square_move) if self._is_possible(double_square_move) else 0
+        return moves
