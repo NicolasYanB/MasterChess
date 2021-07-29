@@ -60,3 +60,21 @@ class Pawn(Piece):
         if not self.moved:
             moves.append(double_square_move) if self._is_possible(double_square_move) else 0
         return moves
+
+
+class Knight(Piece):
+    initial_positions = {"white": [(1, 7), (6, 7)],
+                         "black": [(1, 0), (6, 0)]}
+
+    def __init__(self, color, position):
+        type = "knight"
+        super().__init__(type, color, position)
+
+    def get_possible_moves(self):
+        column, line = self._position
+        moves = []
+        deltas = [(-1, -2), (1, -2), (-1, 2), (1, 2), (-2, -1), (-2, 1), (2, -1), (2, 1)]
+        for x, y in deltas:
+            move = column + x, line + y
+            moves.append(move) if self._is_possible(move) else 0
+        return moves
