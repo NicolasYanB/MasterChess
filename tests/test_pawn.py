@@ -8,7 +8,6 @@ class TestPawn(unittest.TestCase):
         self.pawn2 = Pawn("black",  (1, 0))
 
     def test_get_possible_moves(self):
-        print("test_get_possible_moves")
         # When all moves are possible
         p1moves = self.pawn1.get_possible_moves()
         p2moves = self.pawn2.get_possible_moves()

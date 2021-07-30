@@ -78,3 +78,27 @@ class Knight(Piece):
             move = column + x, line + y
             moves.append(move) if self._is_possible(move) else 0
         return moves
+
+
+class Rook(Piece):
+    initial_positions = {"white": [(0, 7), (7, 7)],
+                         "black": [(0, 0), (7, 0)]}
+
+    def __init__(self, color, position):
+        type = "rook"
+        super().__init__(type, color, position)
+
+    def get_possible_moves(self):
+        column, line = self._position
+        moves = []
+        directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+        for x, y in directions:
+            current_column, current_line = column, line
+            while True:
+                current_column += x
+                current_line += y
+                move = current_column, current_line
+                if not self._is_possible(move):
+                    break
+                moves.append(move)
+        return moves
