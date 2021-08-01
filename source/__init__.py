@@ -1,1 +1,1 @@
-from .pieces import Piece, Pawn, Knight, Rook
+from .pieces import Piece, Pawn, Knight, Rook, Bishop
