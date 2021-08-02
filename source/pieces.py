@@ -150,3 +150,19 @@ class Queen(Piece):
                     break
                 moves.append(move)
         return moves
+
+
+class King(Piece):
+    def __init__(self, color, position):
+        type = "king"
+        super().__init__(type, color, position)
+        self.in_check = False
+
+    def get_possible_moves(self):
+        column, line = self._position
+        moves = []
+        for x in (-1, 0, 1):
+            for y in (-1, 0, 1):
+                move = column + x, line + y
+                moves.append(move) if self._is_possible(move) else 0
+        return moves
