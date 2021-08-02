@@ -105,6 +105,9 @@ class Rook(Piece):
 
 
 class Bishop(Piece):
+    initial_positions = {"white": [(2, 7), (5, 7)],
+                         "black": [(2, 0), (5, 0)]}
+
     def __init__(self, color, position):
         type = "bishop"
         super().__init__(type, color, position)
@@ -113,6 +116,30 @@ class Bishop(Piece):
         column, line = self._position
         moves = []
         directions = [(-1, -1), (1, -1), (1, 1), (-1, 1)]
+        for x, y in directions:
+            current_column, current_line = column, line
+            while True:
+                current_column += x
+                current_line += y
+                move = current_column, current_line
+                if not self._is_possible(move):
+                    break
+                moves.append(move)
+        return moves
+
+
+class Queen(Piece):
+    initial_position = {"white": (3, 7),
+                        "black": (3, 0)}
+
+    def __init__(self, color, position):
+        type = "queen"
+        super().__init__(type, color, position)
+
+    def get_possible_moves(self):
+        column, line = self._position
+        moves = []
+        directions = [(0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1)]
         for x, y in directions:
             current_column, current_line = column, line
             while True:
