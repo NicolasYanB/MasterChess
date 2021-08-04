@@ -26,6 +26,8 @@ class Piece:
         self._position = new_position
 
     def get_possible_moves(self):
+        # Get all moves that a piece can make in its actual position
+        # without considering other pieces that are on the board
         pass
 
     def _is_possible(self, move):
