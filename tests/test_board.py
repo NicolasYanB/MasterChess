@@ -67,6 +67,24 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(board.get_all("pawn", "black"), [bpawn0, bpawn1])
         self.assertEqual(board.get_all("pawn"), [wpawn0, wpawn1, bpawn0, bpawn1])
 
+    def test_remove(self):
+        board = Board()
+        wpawn = Pawn("white", (0, 0))
+        board.add(wpawn)
+        board.remove(0, 0)
+        board.add(wpawn)
+        board.remove(wpawn)
+        self.assertEqual(board.get_all("pawn"), [])
+        self.assertRaises(IndexError, board.remove, 1, 1)
+        self.assertRaises(ValueError, board.remove, wpawn)
+
+    def test_move(self):
+        board = Board()
+        wpawn = Pawn("white", (0, 0))
+        board.add(wpawn)
+        board.move(wpawn, (1, 0))
+        self.assertEqual(wpawn.position, (1, 0))
+
 
 if __name__ == '__main__':
     unittest.main()

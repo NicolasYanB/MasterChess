@@ -1,3 +1,6 @@
+from multipledispatch import dispatch
+
+
 class Board:
     def __init__(self):
         self.__board = [[None for column in range(8)] for line in range(8)]
@@ -37,3 +40,23 @@ class Board:
             if piece.type == piece_type:
                 pieces.append(piece)
         return pieces
+
+    def move(self, piece, destination):
+        piece_column, piece_line = piece.position
+        self.remove(piece_column, piece_line)
+        piece.position = destination
+        self.add(piece)
+        piece.moved = True
+
+    @dispatch(int, int)
+    def remove(self, column, line):
+        if self.is_empty(column, line):
+            raise IndexError("Can't remove from an empty position")
+        self.__board[column][line] = None
+
+    @dispatch(object)
+    def remove(self, piece):
+        column, line = piece.position
+        if self.is_empty(column, line):
+            raise ValueError("piece not in board")
+        self.__board[column][line] = None
