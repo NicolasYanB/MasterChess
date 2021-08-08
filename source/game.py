@@ -22,7 +22,7 @@ class Board:
     def add(self, piece):
         column, line = piece.position
         if not self.is_empty(column, line):
-            raise IndexError("There is already an object in this index")
+            raise IndexError("There is already an object in this position")
         self.__board[column][line] = piece
 
     def get_all_of(self, color):

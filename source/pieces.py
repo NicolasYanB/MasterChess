@@ -78,13 +78,19 @@ class Knight(Piece):
         type = "knight"
         super().__init__(type, color, position)
 
-    def get_possible_moves(self):
+    def get_possible_moves(self, board):
         column, line = self._position
         moves = []
         deltas = [(-1, -2), (1, -2), (-1, 2), (1, 2), (-2, -1), (-2, 1), (2, -1), (2, 1)]
         for x, y in deltas:
             move = column + x, line + y
-            moves.append(move) if self._is_possible(move) else 0
+            if not self._is_possible(move):
+                continue
+            if not board.is_empty(*move):
+                piece = board.get(*move)
+                if piece.color == self._color:
+                    continue
+            moves.append(move)
         return moves
 
 
