@@ -42,6 +42,8 @@ class Board:
         return pieces
 
     def move(self, piece, destination):
+        if piece.position == destination:
+            raise ValueError("destination can't be the current piece position")
         piece_column, piece_line = piece.position
         self.remove(piece_column, piece_line)
         piece.position = destination

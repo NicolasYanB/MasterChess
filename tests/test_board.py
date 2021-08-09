@@ -68,6 +68,7 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(board.get_all("pawn"), [wpawn0, wpawn1, bpawn0, bpawn1])
 
     def test_remove(self):
+        print("test_remove")
         board = Board()
         wpawn = Pawn("white", (0, 0))
         board.add(wpawn)
@@ -79,11 +80,14 @@ class TestBoard(unittest.TestCase):
         self.assertRaises(ValueError, board.remove, wpawn)
 
     def test_move(self):
+        print("test_move")
         board = Board()
         wpawn = Pawn("white", (0, 0))
         board.add(wpawn)
         board.move(wpawn, (1, 0))
         self.assertEqual(wpawn.position, (1, 0))
+        # Passing the current postion of the piece as the destination
+        self.assertRaises(ValueError, board.move, wpawn, (1, 0))
 
 
 if __name__ == '__main__':
