@@ -102,7 +102,7 @@ class Rook(Piece):
         type = "rook"
         super().__init__(type, color, position)
 
-    def get_possible_moves(self):
+    def get_possible_moves(self, board):
         column, line = self._position
         moves = []
         directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
@@ -113,6 +113,11 @@ class Rook(Piece):
                 current_line += y
                 move = current_column, current_line
                 if not self._is_possible(move):
+                    break
+                if not board.is_empty(*move):
+                    piece = board.get(*move)
+                    if piece.color != self._color:
+                        moves.append(move)
                     break
                 moves.append(move)
         return moves
