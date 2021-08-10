@@ -1,6 +1,26 @@
 from multipledispatch import dispatch
 
 
+class Game:
+    def __init__(self):
+        self.__board = Board()
+        self.__selected_piece = None
+        self.__captured_pieces = []
+        self.__turn = "white"
+
+    @property
+    def board(self):
+        return self.__board
+
+    @property
+    def selected_piece(self):
+        return self.__selected_piece
+
+    @property
+    def captured_pieces(self):
+        return self.__captured_pieces
+
+
 class Board:
     def __init__(self):
         self.__board = [[None for column in range(8)] for line in range(8)]
