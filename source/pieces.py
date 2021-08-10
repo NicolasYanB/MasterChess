@@ -153,8 +153,8 @@ class Bishop(Piece):
 
 
 class Queen(Piece):
-    initial_position = {"white": (3, 7),
-                        "black": (3, 0)}
+    initial_positions = {"white": [(3, 7)],
+                         "black": [(3, 0)]}
 
     def __init__(self, color, position):
         type = "queen"
@@ -182,6 +182,9 @@ class Queen(Piece):
 
 
 class King(Piece):
+    initial_positions = {"white": [(4, 7)],
+                         "black": [(4, 0)]}
+
     def __init__(self, color, position):
         type = "king"
         super().__init__(type, color, position)

@@ -1,4 +1,5 @@
 from multipledispatch import dispatch
+from . import Pawn, Knight, Rook, Bishop, Queen, King
 
 
 class Game:
@@ -19,6 +20,14 @@ class Game:
     @property
     def captured_pieces(self):
         return self.__captured_pieces
+
+    def load_board(self):
+        piece_types = [Pawn, Knight, Rook, Bishop, Queen, King]
+        for color in ("white", "black"):
+            for type in piece_types:
+                for position in type.initial_positions[color]:
+                    piece = type(color, position)
+                    self.__board.add(piece)
 
 
 class Board:
