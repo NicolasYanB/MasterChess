@@ -187,11 +187,17 @@ class King(Piece):
         super().__init__(type, color, position)
         self.in_check = False
 
-    def get_possible_moves(self):
+    def get_possible_moves(self, board):
         column, line = self._position
         moves = []
         for x in (-1, 0, 1):
             for y in (-1, 0, 1):
                 move = column + x, line + y
-                moves.append(move) if self._is_possible(move) else 0
+                if not self._is_possible(move):
+                    continue
+                if not board.is_empty(*move):
+                    piece = board.get(*move)
+                    if piece.color == self._color:
+                        continue
+                moves.append(move)
         return moves
