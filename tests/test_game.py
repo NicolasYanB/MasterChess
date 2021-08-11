@@ -51,6 +51,15 @@ class TestGame(unittest.TestCase):
         self.game.unselect()
         self.assertIsNone(self.game.selected_piece)
 
+    def test_get_selected_piece_moves(self):
+        print("test_get_selected_piece_moves")
+        self.game.load_board()
+        self.game.select_piece(0, 6)
+        self.assertEqual(self.game.get_selected_piece_moves(), [(0, 5), (0, 4)])
+        self.game.unselect()
+        self.game.select_piece(0, 7)
+        self.assertEqual(self.game.get_selected_piece_moves(), [])
+
 
 if __name__ == '__main__':
     unittest.main()
