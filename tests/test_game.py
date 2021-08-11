@@ -1,5 +1,5 @@
 import unittest
-from source import Game
+from source import Game, TurnError
 
 
 class TestGame(unittest.TestCase):
@@ -34,6 +34,14 @@ class TestGame(unittest.TestCase):
                     p = self.game.board.get(*position)
                     self.assertEqual(p.color, color)
                     self.assertEqual(p.type, piece)
+
+    def test_select_piece(self):
+        print("test_select_piece")
+        self.game.load_board()
+        self.game.select_piece(0, 6)
+        self.assertEqual(self.game.selected_piece, self.game.board.get(0, 6))
+        self.assertRaises(ValueError, self.game.select_piece, 0, 5)
+        self.assertRaises(TurnError, self.game.select_piece, 0, 1)
 
 
 if __name__ == '__main__':

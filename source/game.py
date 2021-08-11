@@ -2,6 +2,10 @@ from multipledispatch import dispatch
 from . import Pawn, Knight, Rook, Bishop, Queen, King
 
 
+class TurnError(Exception):
+    pass
+
+
 class Game:
     def __init__(self):
         self.__board = Board()
@@ -28,6 +32,14 @@ class Game:
                 for position in type.initial_positions[color]:
                     piece = type(color, position)
                     self.__board.add(piece)
+
+    def select_piece(self, column, line):
+        if self.__board.is_empty(column, line):
+            raise ValueError("There's not a piece in this position")
+        piece = self.__board.get(column, line)
+        if piece.color != self.__turn:
+            raise TurnError("Can't select an opponent piece")
+        self.__selected_piece = piece
 
 
 class Board:
