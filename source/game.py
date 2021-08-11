@@ -6,6 +6,10 @@ class TurnError(Exception):
     pass
 
 
+class InvalidMoveException(Exception):
+    pass
+
+
 class Game:
     def __init__(self):
         self.__board = Board()
@@ -48,6 +52,13 @@ class Game:
 
     def get_selected_piece_moves(self):
         return self.__selected_piece.get_possible_moves(self.__board)
+
+    def move_selected_piece(self, destination):
+        selected_piece_possible_moves = self.__selected_piece.get_possible_moves(self.__board)
+        if destination not in selected_piece_possible_moves:
+            raise InvalidMoveException("This piece can't be moved to this position")
+        self.__board.move(self.__selected_piece, destination)
+        self.__selected_piece.moved = True
 
 
 class Board:

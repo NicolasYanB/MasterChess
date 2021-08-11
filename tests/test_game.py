@@ -1,5 +1,5 @@
 import unittest
-from source import Game, TurnError
+from source import Game, TurnError, InvalidMoveException
 
 
 class TestGame(unittest.TestCase):
@@ -59,6 +59,15 @@ class TestGame(unittest.TestCase):
         self.game.unselect()
         self.game.select_piece(0, 7)
         self.assertEqual(self.game.get_selected_piece_moves(), [])
+
+    def test_move_selected_piece(self):
+        print("test_move_selected_piece")
+        self.game.load_board()
+        piece = self.game.board.get(0, 6)
+        self.game.select_piece(0, 6)
+        self.assertRaises(InvalidMoveException, self.game.move_selected_piece, (1, 5))
+        self.game.move_selected_piece((0, 5))
+        self.assertEqual(self.game.selected_piece, piece)
 
 
 if __name__ == '__main__':
