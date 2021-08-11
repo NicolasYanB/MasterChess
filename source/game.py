@@ -41,6 +41,11 @@ class Game:
             raise TurnError("Can't select an opponent piece")
         self.__selected_piece = piece
 
+    def unselect(self):
+        if self.__selected_piece is None:
+            raise TypeError("Selected piece is already None")
+        self.__selected_piece = None
+
 
 class Board:
     def __init__(self):
