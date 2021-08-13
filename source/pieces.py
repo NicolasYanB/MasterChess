@@ -3,7 +3,7 @@ class Piece:
         self._type = type
         self._color = color
         self._position = position
-        self._image = f"images/pieces/{color}/{type}"
+        self._image = f"images/pieces/{color}/{type}.png"
         self.moved = False
 
     @property

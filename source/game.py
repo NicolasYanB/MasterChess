@@ -1,5 +1,5 @@
 from multipledispatch import dispatch
-from . import Pawn, Knight, Rook, Bishop, Queen, King
+from source import Pawn, Knight, Rook, Bishop, Queen, King
 
 
 class TurnError(Exception):
