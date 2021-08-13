@@ -101,6 +101,9 @@ class Board:
                 pieces.append(piece)
         return pieces
 
+    def get_all_pieces(self):
+        return [piece for piece in self]
+
     def move(self, piece, destination):
         if piece.position == destination:
             raise ValueError("destination can't be the current piece position")

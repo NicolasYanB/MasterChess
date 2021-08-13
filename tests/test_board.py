@@ -89,6 +89,17 @@ class TestBoard(unittest.TestCase):
         # Passing the current postion of the piece as the destination
         self.assertRaises(ValueError, board.move, wpawn, (1, 0))
 
+    def test_get_all_pieces(self):
+        print("test_get_all_pieces")
+        board = Board()
+        wpawn = Pawn("white", (0, 0))
+        brook = Rook("black", (7, 7))
+        wknight = Knight("white", (3, 4))
+        board.add(wpawn)
+        board.add(brook)
+        board.add(wknight)
+        self.assertEqual(board.get_all_pieces(), [wpawn, wknight, brook])
+
 
 if __name__ == '__main__':
     unittest.main()

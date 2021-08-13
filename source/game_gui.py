@@ -32,7 +32,7 @@ class GameGui(tk.Frame):
     def draw_pieces(self):
         self.game.load_board()
         self.images = []
-        pieces = [piece for piece in self.game.board]
+        pieces = self.game.board.get_all_pieces()
         for piece in pieces:
             column, line = piece.position
             x, y = column * self.square_size, line * self.square_size
