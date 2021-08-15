@@ -1,5 +1,5 @@
 import tkinter as tk
-from source import Game
+from source import Game, TurnError
 
 
 class GameGui(tk.Frame):
@@ -37,8 +37,30 @@ class GameGui(tk.Frame):
             column, line = piece.position
             x, y = column * self.square_size, line * self.square_size
             image = tk.PhotoImage(file=piece.image)
-            self.canvas.create_image(x, y, image=image, anchor=tk.NW)
+            self.canvas.create_image(x, y, image=image, anchor=tk.NW, tags="piece")
             self.images.append(image)
+        self.canvas.tag_bind("piece", "<Button-1>", self.piece_event)
+
+    def piece_event(self, event):
+        x, y = event.x, event.y
+        square_x, square_y = self.find_square(x, y)
+        column, line = square_x//self.square_size, square_y//self.square_size
+        # --- Temporary code ---
+        try:
+            self.game.select_piece(column, line)
+        except TurnError:
+            self.game.unselect() if self.game.selected_piece is not None else 0
+            return
+        # Test
+        piece = self.game.selected_piece
+        print(piece.type, piece.color, piece.position)
+
+    def find_square(self, x, y):
+        for posy in range(0, self.height, self.square_size):
+            for posx in range(0, self.width, self.square_size):
+                x0, y0, x1, y1 = posx, posy, posx + self.square_size, posy + self.square_size
+                if x0 < x < x1 and y0 < y < y1:
+                    return x0, y0
 
 
 if __name__ == '__main__':
