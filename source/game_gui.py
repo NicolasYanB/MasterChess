@@ -50,12 +50,10 @@ class GameGui(tk.Frame):
         x, y = event.x, event.y
         square_x, square_y = self.find_square(x, y)
         column, line = square_x//self.square_size, square_y//self.square_size
-        # --- Temporary code ---
         try:
             self.game.select_piece(column, line)
         except TurnError:
             return
-        #
         self.highlight_piece(square_x, square_y)
 
     def find_square(self, x, y):
@@ -70,10 +68,24 @@ class GameGui(tk.Frame):
         x0, y0 = x + border, y + border
         x1, y1 = x + self.square_size - border, y + self.square_size - border
         self.canvas.create_rectangle(x0, y0, x1, y1, outline="#f5cb5c", tags="selected", width=5)
+        self.highlight_valid_moves()
+
+    def highlight_valid_moves(self):
+        valid_moves = self.game.get_selected_piece_moves()
+        for move in valid_moves:
+            column, line = move
+            x, y = column * self.square_size, line * self.square_size
+            x0, y0, x1, y1 = x, y, x + self.square_size, y + self.square_size
+            if not self.game.board.is_empty(column, line):
+                continue
+            margin = 28
+            x0, y0, x1, y1 = x0 + margin, y0 + margin, x1 - margin, y1 - margin
+            self.canvas.create_oval(x0, y0, x1, y1, fill="#f5cb5c", outline="#f5cb5c", tags="move")
 
     def unselect(self):
         self.game.unselect()
         self.canvas.delete("selected")
+        self.canvas.delete("move")
 
 
 if __name__ == '__main__':
