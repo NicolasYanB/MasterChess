@@ -25,9 +25,10 @@ class GameGui(tk.Frame):
         for y in range(0, self.height, self.square_size):
             for x in range(0, self.width, self.square_size):
                 x0, y0, x1, y1 = x, y, x + self.square_size, y + self.square_size
-                self.canvas.create_rectangle(x0, y0, x1, y1, fill=colors[color])
+                self.canvas.create_rectangle(x0, y0, x1, y1, fill=colors[color], tags="square")
                 color = abs(color - 1)
             colors.reverse()
+        self.canvas.tag_bind("square", "<Button-1>", self.square_event)
 
     def draw_pieces(self):
         self.game.load_board()
@@ -41,7 +42,11 @@ class GameGui(tk.Frame):
             self.images.append(image)
         self.canvas.tag_bind("piece", "<Button-1>", self.piece_event)
 
+    def square_event(self, event):
+        self.unselect()
+
     def piece_event(self, event):
+        self.unselect()
         x, y = event.x, event.y
         square_x, square_y = self.find_square(x, y)
         column, line = square_x//self.square_size, square_y//self.square_size
@@ -49,11 +54,9 @@ class GameGui(tk.Frame):
         try:
             self.game.select_piece(column, line)
         except TurnError:
-            self.game.unselect() if self.game.selected_piece is not None else 0
             return
-        # Test
-        piece = self.game.selected_piece
-        print(piece.type, piece.color, piece.position)
+        #
+        self.highlight_piece(square_x, square_y)
 
     def find_square(self, x, y):
         for posy in range(0, self.height, self.square_size):
@@ -61,6 +64,16 @@ class GameGui(tk.Frame):
                 x0, y0, x1, y1 = posx, posy, posx + self.square_size, posy + self.square_size
                 if x0 < x < x1 and y0 < y < y1:
                     return x0, y0
+
+    def highlight_piece(self, x, y):
+        border = 3  # Value to make the border fits inside the square
+        x0, y0 = x + border, y + border
+        x1, y1 = x + self.square_size - border, y + self.square_size - border
+        self.canvas.create_rectangle(x0, y0, x1, y1, outline="#f5cb5c", tags="selected", width=5)
+
+    def unselect(self):
+        self.game.unselect()
+        self.canvas.delete("selected")
 
 
 if __name__ == '__main__':

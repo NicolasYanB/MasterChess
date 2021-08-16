@@ -46,8 +46,6 @@ class Game:
         self.__selected_piece = piece
 
     def unselect(self):
-        if self.__selected_piece is None:
-            raise TypeError("Selected piece is already None")
         self.__selected_piece = None
 
     def get_selected_piece_moves(self):
