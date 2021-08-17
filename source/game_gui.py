@@ -36,7 +36,8 @@ class GameGui(tk.Frame):
         pieces = self.game.board.get_all_pieces()
         for piece in pieces:
             column, line = piece.position
-            x, y = column * self.square_size, line * self.square_size
+            margin = 1  # Value to make the piece fits perfectly inside the square
+            x, y = column * self.square_size + margin, line * self.square_size + margin
             image = tk.PhotoImage(file=piece.image)
             self.canvas.create_image(x, y, image=image, anchor=tk.NW, tags="piece")
             self.images.append(image)
@@ -60,7 +61,7 @@ class GameGui(tk.Frame):
         for posy in range(0, self.height, self.square_size):
             for posx in range(0, self.width, self.square_size):
                 x0, y0, x1, y1 = posx, posy, posx + self.square_size, posy + self.square_size
-                if x0 < x < x1 and y0 < y < y1:
+                if x0 <= x < x1 and y0 <= y < y1:
                     return x0, y0
 
     def highlight_piece(self, x, y):
@@ -78,7 +79,7 @@ class GameGui(tk.Frame):
             x0, y0, x1, y1 = x, y, x + self.square_size, y + self.square_size
             if not self.game.board.is_empty(column, line):
                 continue
-            margin = 28
+            margin = 28  # margin between the square and the circle
             x0, y0, x1, y1 = x0 + margin, y0 + margin, x1 - margin, y1 - margin
             self.canvas.create_oval(x0, y0, x1, y1, fill="#f5cb5c", outline="#f5cb5c", tags="move")
 
