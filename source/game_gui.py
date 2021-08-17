@@ -12,6 +12,7 @@ class GameGui(tk.Frame):
         self.canvas = tk.Canvas(master, width=self.width, height=self.height)
         self.canvas.pack()
         self.game = Game()
+        self.game.load_board()
         self.draw_board()
         self.draw_pieces()
         self.master = master
@@ -31,7 +32,6 @@ class GameGui(tk.Frame):
         self.canvas.tag_bind("square", "<Button-1>", self.square_event)
 
     def draw_pieces(self):
-        self.game.load_board()
         self.images = []
         pieces = self.game.board.get_all_pieces()
         for piece in pieces:
@@ -56,6 +56,16 @@ class GameGui(tk.Frame):
         except TurnError:
             return
         self.highlight_piece(square_x, square_y)
+
+    def move_event(self, event):
+        x, y = event.x, event.y
+        square_x, square_y = self.find_square(x, y)
+        column, line = square_x//self.square_size, square_y//self.square_size
+        move = column, line
+        self.game.move_selected_piece(move)
+        self.unselect()
+        self.canvas.delete("piece")
+        self.draw_pieces()
 
     def find_square(self, x, y):
         for posy in range(0, self.height, self.square_size):
@@ -82,6 +92,7 @@ class GameGui(tk.Frame):
             margin = 28  # margin between the square and the circle
             x0, y0, x1, y1 = x0 + margin, y0 + margin, x1 - margin, y1 - margin
             self.canvas.create_oval(x0, y0, x1, y1, fill="#f5cb5c", outline="#f5cb5c", tags="move")
+        self.canvas.tag_bind("move", "<Button-1>", self.move_event)
 
     def unselect(self):
         self.game.unselect()

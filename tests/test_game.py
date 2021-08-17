@@ -46,7 +46,6 @@ class TestGame(unittest.TestCase):
     def test_unselect(self):
         print("test_unselect")
         self.game.load_board()
-        self.assertRaises(TypeError, self.game.unselect)
         self.game.select_piece(0, 6)
         self.game.unselect()
         self.assertIsNone(self.game.selected_piece)

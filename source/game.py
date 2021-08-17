@@ -57,6 +57,7 @@ class Game:
             raise InvalidMoveException("This piece can't be moved to this position")
         self.__board.move(self.__selected_piece, destination)
         self.__selected_piece.moved = True
+        self.__turn = "black" if self.__turn == "white" else "white"
 
 
 class Board:
