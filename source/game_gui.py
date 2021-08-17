@@ -44,6 +44,14 @@ class GameGui(tk.Frame):
         self.canvas.tag_bind("piece", "<Button-1>", self.piece_event)
 
     def square_event(self, event):
+        x, y = event.x, event.y
+        square_x, square_y = self.find_square(x, y)
+        square_coords = square_x, square_y, square_x + self.square_size, square_y + self.square_size
+        enclosed_objects = self.canvas.find_enclosed(*square_coords)
+        for obj in enclosed_objects:
+            if "move" in self.canvas.gettags(obj):
+                self.move_event(event)
+                break
         self.unselect()
 
     def piece_event(self, event):
