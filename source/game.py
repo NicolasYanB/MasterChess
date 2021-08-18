@@ -60,6 +60,8 @@ class Game:
         if destination not in selected_piece_possible_moves:
             raise InvalidMoveException("This piece can't be moved to this position")
         if not self.__board.is_empty(*destination):
+            captured_piece = self.__board.get(*destination)
+            self.__captured_pieces.append(captured_piece)
             self.__board.remove(*destination)
         self.__board.move(self.__selected_piece, destination)
         self.__selected_piece.moved = True
