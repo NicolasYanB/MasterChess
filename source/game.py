@@ -55,6 +55,8 @@ class Game:
         selected_piece_possible_moves = self.__selected_piece.get_possible_moves(self.__board)
         if destination not in selected_piece_possible_moves:
             raise InvalidMoveException("This piece can't be moved to this position")
+        if not self.__board.is_empty(*destination):
+            self.__board.remove(*destination)
         self.__board.move(self.__selected_piece, destination)
         self.__selected_piece.moved = True
         self.__turn = "black" if self.__turn == "white" else "white"

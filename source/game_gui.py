@@ -1,5 +1,5 @@
 import tkinter as tk
-from source import Game, TurnError
+from source import Game, TurnError, InvalidMoveException
 
 
 class GameGui(tk.Frame):
@@ -70,7 +70,11 @@ class GameGui(tk.Frame):
         square_x, square_y = self.find_square(x, y)
         column, line = square_x//self.square_size, square_y//self.square_size
         move = column, line
-        self.game.move_selected_piece(move)
+        try:
+            self.game.move_selected_piece(move)
+        except InvalidMoveException:
+            self.unselect()
+            return
         self.unselect()
         self.canvas.delete("piece")
         self.draw_pieces()
@@ -96,6 +100,11 @@ class GameGui(tk.Frame):
             x, y = column * self.square_size, line * self.square_size
             x0, y0, x1, y1 = x, y, x + self.square_size, y + self.square_size
             if not self.game.board.is_empty(column, line):
+                border = 3
+                x0, y0 = x0 + border, y0 + border
+                x1, y1 = x1 - border, y1 - border
+                coords = x0, y0, x1, y1
+                self.canvas.create_rectangle(coords, outline="#fca311", tags="move", width=5)
                 continue
             margin = 28  # margin between the square and the circle
             x0, y0, x1, y1 = x0 + margin, y0 + margin, x1 - margin, y1 - margin
