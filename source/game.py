@@ -65,7 +65,18 @@ class Game:
             self.__board.remove(*destination)
         self.__board.move(self.__selected_piece, destination)
         self.__selected_piece.moved = True
+        enemy_color = "black" if self.__turn == "white" else "white"
+        enemy_king = self.__board.get_all("king", enemy_color)[0]
+        if self.king_in_check(enemy_king):
+            enemy_king.check = True
+            print(f"{enemy_color} king in check")  # Temporary code
+        else:
+            enemy_king.check = False
         self.__turn = "black" if self.__turn == "white" else "white"
+
+    def king_in_check(self, king):
+        selected_piece_possible_moves = self.__selected_piece.get_possible_moves(self.__board)
+        return king.position in selected_piece_possible_moves
 
 
 class Board:
