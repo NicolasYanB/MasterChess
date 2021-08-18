@@ -75,12 +75,16 @@ class Game:
             king = self.__board.get_all("king", color=king_color)[0]
             for piece in pieces:
                 if king.position in piece.get_possible_moves(self.__board):
-                    print(f"{king_color} king in check")  # temporary
                     king.in_check = True
-                    break
-            else:
-                print(f"{king_color} king not in check")  # temporary
-                king.in_check = False
+                    return
+            king.in_check = False
+
+    def get_king_in_check(self):
+        kings = self.__board.get_all("king")
+        for king in kings:
+            if king.in_check:
+                return king
+        return 0
 
 
 class Board:

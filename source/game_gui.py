@@ -80,6 +80,8 @@ class GameGui(tk.Frame):
         self.unselect()
         self.canvas.delete("piece")
         self.draw_pieces()
+        king_in_check = self.game.get_king_in_check()
+        self.highlight_king_in_check(king_in_check)
 
     def find_square(self, x, y):
         for posy in range(0, self.height, self.square_size):
@@ -112,6 +114,17 @@ class GameGui(tk.Frame):
             x0, y0, x1, y1 = x0 + margin, y0 + margin, x1 - margin, y1 - margin
             self.canvas.create_oval(x0, y0, x1, y1, fill="#f5cb5c", outline="#f5cb5c", tags="move")
         self.canvas.tag_bind("move", "<Button-1>", self.move_event)
+
+    def highlight_king_in_check(self, king):
+        if king == 0:
+            self.canvas.delete("check")
+            return
+        column, line = king.position
+        x, y = column * self.square_size, line * self.square_size
+        border = 3
+        x0, y0 = x + border, y + border
+        x1, y1 = x + self.square_size - border, y + self.square_size - border
+        self.canvas.create_rectangle(x0, y0, x1, y1, outline="red", tags="check", width=5)
 
     def unselect(self):
         self.game.unselect()
