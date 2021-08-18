@@ -1,5 +1,5 @@
 import tkinter as tk
-from source import Game, TurnError, InvalidMoveException
+from source import Game, InvalidMoveException
 
 
 class GameGui(tk.Frame):
@@ -55,14 +55,16 @@ class GameGui(tk.Frame):
         self.unselect()
 
     def piece_event(self, event):
-        self.unselect()
         x, y = event.x, event.y
         square_x, square_y = self.find_square(x, y)
         column, line = square_x//self.square_size, square_y//self.square_size
-        try:
-            self.game.select_piece(column, line)
-        except TurnError:
+        clicked_piece = self.game.board.get(column, line)
+        if clicked_piece.color != self.game.turn:
+            if self.game.selected_piece is not None:
+                self.move_event(event)
             return
+        self.unselect()
+        self.game.select_piece(column, line)
         self.highlight_piece(square_x, square_y)
 
     def move_event(self, event):

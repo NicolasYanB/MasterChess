@@ -29,6 +29,10 @@ class Game:
     def captured_pieces(self):
         return self.__captured_pieces
 
+    @property
+    def turn(self):
+        return self.__turn
+
     def load_board(self):
         piece_types = [Pawn, Knight, Rook, Bishop, Queen, King]
         for color in ("white", "black"):
