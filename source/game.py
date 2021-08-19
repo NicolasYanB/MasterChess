@@ -68,12 +68,7 @@ class Game:
         board_copy.remove(*move)
         board_copy.move(piece_copy, move)
         ally_king = board_copy.get_all("king", piece_copy.color)[0]
-        enemy_color = "black" if piece_copy.color == "white" else "white"
-        enemy_pieces = board_copy.get_all_of(enemy_color)
-        for piece in enemy_pieces:
-            if ally_king.position in piece.get_possible_moves(board_copy):
-                return True
-        return False
+        return self.__is_in_check(ally_king, board_copy)
 
     def move_selected_piece(self, destination):
         selected_piece_possible_moves = self.__selected_piece.get_possible_moves(self.__board)
@@ -85,19 +80,20 @@ class Game:
             self.__board.remove(*destination)
         self.__board.move(self.__selected_piece, destination)
         self.__selected_piece.moved = True
-        self.__set_king_status()
         self.__turn = "black" if self.__turn == "white" else "white"
-
-    def __set_king_status(self):
         for color in ("white", "black"):
-            pieces = self.__board.get_all_of(color)
-            king_color = "black" if color == "white" else "white"
-            king = self.__board.get_all("king", color=king_color)[0]
-            for piece in pieces:
-                if king.position in piece.get_possible_moves(self.__board):
-                    king.in_check = True
-                    return
+            king = self.__board.get_all("king", color=color)[0]
+            if self.__is_in_check(king, self.__board):
+                king.in_check = True
+                continue
             king.in_check = False
+
+    def __is_in_check(self, king, board):
+        enemy_color = "black" if king.color == "white" else "white"
+        enemy_pieces = board.get_all_of(enemy_color)
+        for piece in enemy_pieces:
+            if king.position in piece.get_possible_moves(board):
+                return True
 
     def get_king_in_check(self):
         kings = self.__board.get_all("king")
