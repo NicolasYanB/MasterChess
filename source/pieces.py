@@ -58,9 +58,9 @@ class Pawn(Piece):
         normal_move = column, line + self.__direction
         if self._is_possible(normal_move) and board.is_empty(*normal_move):
             moves.append(normal_move)
-        double_move = column, line + self.__direction * 2
-        if not self.moved and self._is_possible(double_move) and board.is_empty(*normal_move):
-            moves.append(double_move)
+            double_move = column, line + self.__direction * 2
+            if not self.moved and self._is_possible(double_move) and board.is_empty(*double_move):
+                moves.append(double_move)
         for x in (1, -1):
             capture_move = column + x, line + self.__direction
             if self._is_possible(capture_move) and not board.is_empty(*capture_move):
