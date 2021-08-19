@@ -76,7 +76,6 @@ class TestBoard(unittest.TestCase):
         board.add(wpawn)
         board.remove(wpawn)
         self.assertEqual(board.get_all("pawn"), [])
-        self.assertRaises(IndexError, board.remove, 1, 1)
         self.assertRaises(ValueError, board.remove, wpawn)
 
     def test_move(self):

@@ -53,7 +53,27 @@ class Game:
         self.__selected_piece = None
 
     def get_selected_piece_moves(self):
-        return self.__selected_piece.get_possible_moves(self.__board)
+        piece_possible_moves = self.__selected_piece.get_possible_moves(self.__board)
+        piece_valid_moves = []
+        for move in piece_possible_moves:
+            if not self.__let_king_vulnerable(self.__selected_piece, move):
+                piece_valid_moves.append(move)
+        return piece_valid_moves
+
+    def __let_king_vulnerable(self, piece, move):
+        from copy import deepcopy
+        board_copy = deepcopy(self.__board)
+        column, line = piece.position
+        piece_copy = board_copy.get(column, line)
+        board_copy.remove(*move)
+        board_copy.move(piece_copy, move)
+        ally_king = board_copy.get_all("king", piece_copy.color)[0]
+        enemy_color = "black" if piece_copy.color == "white" else "white"
+        enemy_pieces = board_copy.get_all_of(enemy_color)
+        for piece in enemy_pieces:
+            if ally_king.position in piece.get_possible_moves(board_copy):
+                return True
+        return False
 
     def move_selected_piece(self, destination):
         selected_piece_possible_moves = self.__selected_piece.get_possible_moves(self.__board)
@@ -141,8 +161,6 @@ class Board:
 
     @dispatch(int, int)
     def remove(self, column, line):
-        if self.is_empty(column, line):
-            raise IndexError("Can't remove from an empty position")
         self.__board[column][line] = None
 
     @dispatch(object)
