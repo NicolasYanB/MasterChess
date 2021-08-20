@@ -16,6 +16,7 @@ class Game:
         self.__selected_piece = None
         self.__captured_pieces = []
         self.__turn = "white"
+        self.__en_passant_pawn = 0
 
     @property
     def board(self):
@@ -81,6 +82,12 @@ class Game:
             captured_piece = self.__board.get(*destination)
             self.__captured_pieces.append(captured_piece)
             self.__board.remove(*destination)
+        if self.__is_susceptible_to_en_passant(self.__selected_piece, destination):
+            print(f"en passant {self.__selected_piece.color} {self.__selected_piece.type}")
+            self.__en_passant_pawn = self.__selected_piece
+        else:
+            print(0)
+            self.__en_passant_pawn = 0
         self.__board.move(self.__selected_piece, destination)
         self.__selected_piece.moved = True
         self.__turn = "black" if self.__turn == "white" else "white"
@@ -90,6 +97,15 @@ class Game:
                 king.in_check = True
                 continue
             king.in_check = False
+
+    def __is_susceptible_to_en_passant(self, piece, move):
+        if piece.type != "pawn":
+            return False
+        if piece.moved:
+            return False
+        piece_line = piece.position[1]
+        move_line = move[1]
+        return abs(piece_line - move_line) == 2
 
     def __is_in_check(self, king, board):
         enemy_color = "black" if king.color == "white" else "white"
