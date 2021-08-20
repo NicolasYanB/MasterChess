@@ -53,10 +53,13 @@ class Game:
         self.__selected_piece = None
 
     def get_selected_piece_moves(self):
-        piece_possible_moves = self.__selected_piece.get_possible_moves(self.__board)
+        return self.__get_valid_moves(self.__selected_piece)
+
+    def __get_valid_moves(self, piece):
+        piece_possible_moves = piece.get_possible_moves(self.__board)
         piece_valid_moves = []
         for move in piece_possible_moves:
-            if not self.__let_king_vulnerable(self.__selected_piece, move):
+            if not self.__let_king_vulnerable(piece, move):
                 piece_valid_moves.append(move)
         return piece_valid_moves
 
