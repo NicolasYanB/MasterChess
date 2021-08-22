@@ -52,6 +52,10 @@ class Pawn(Piece):
         super().__init__(type, color, position)
         self.__direction = -1 if color == "white" else 1
 
+    @property
+    def direction(self):
+        return self.__direction
+
     def get_possible_moves(self, board):
         column, line = self._position
         moves = []

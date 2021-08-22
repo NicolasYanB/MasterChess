@@ -56,12 +56,27 @@ class Game:
     def get_selected_piece_moves(self):
         return self.__get_valid_moves(self.__selected_piece)
 
+    def __pawn_en_passant(self):
+        if self.__selected_piece.type != "pawn":
+            return False
+        column, line = self.__selected_piece.position
+        for delta in (1, -1):
+            if not self.__board.is_empty(column + delta, line):
+                piece = self.__board.get(column + delta, line)
+                if piece == self.__en_passant_pawn:
+                    vertical_direction = self.__selected_piece.direction
+                    return column + delta, line + vertical_direction
+        return False
+
     def __get_valid_moves(self, piece):
         piece_possible_moves = piece.get_possible_moves(self.__board)
         piece_valid_moves = []
         for move in piece_possible_moves:
             if not self.__let_king_vulnerable(piece, move):
                 piece_valid_moves.append(move)
+        en_passant = self.__pawn_en_passant()
+        if en_passant:
+            piece_valid_moves.append(en_passant)
         return piece_valid_moves
 
     def __let_king_vulnerable(self, piece, move):
@@ -75,7 +90,7 @@ class Game:
         return self.__is_in_check(ally_king, board_copy)
 
     def move_selected_piece(self, destination):
-        selected_piece_possible_moves = self.__selected_piece.get_possible_moves(self.__board)
+        selected_piece_possible_moves = self.get_selected_piece_moves()
         if destination not in selected_piece_possible_moves:
             raise InvalidMoveException("This piece can't be moved to this position")
         if not self.__board.is_empty(*destination):
@@ -83,10 +98,8 @@ class Game:
             self.__captured_pieces.append(captured_piece)
             self.__board.remove(*destination)
         if self.__is_susceptible_to_en_passant(self.__selected_piece, destination):
-            print(f"en passant {self.__selected_piece.color} {self.__selected_piece.type}")
             self.__en_passant_pawn = self.__selected_piece
         else:
-            print(0)
             self.__en_passant_pawn = 0
         self.__board.move(self.__selected_piece, destination)
         self.__selected_piece.moved = True
@@ -113,6 +126,7 @@ class Game:
         for piece in enemy_pieces:
             if king.position in piece.get_possible_moves(board):
                 return True
+        return False
 
     def get_king_in_check(self):
         kings = self.__board.get_all("king")
