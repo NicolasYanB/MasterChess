@@ -61,11 +61,14 @@ class Game:
             return False
         column, line = self.__selected_piece.position
         for delta in (1, -1):
-            if not self.__board.is_empty(column + delta, line):
-                piece = self.__board.get(column + delta, line)
+            verified_column = column + delta
+            if verified_column < 0 or verified_column > 7:
+                continue
+            if not self.__board.is_empty(verified_column, line):
+                piece = self.__board.get(verified_column, line)
                 if piece == self.__en_passant_pawn:
                     vertical_direction = self.__selected_piece.direction
-                    return column + delta, line + vertical_direction
+                    return verified_column, line + vertical_direction
         return False
 
     def __get_valid_moves(self, piece):
