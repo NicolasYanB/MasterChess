@@ -6,6 +6,7 @@ class GameGui(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
         self.width, self.height = 712, 712
+        self.squares = []
         master.geometry(f"{self.width}x{self.height}")
         master.resizable(False, False)
         master.title("Master Chess")
@@ -26,8 +27,10 @@ class GameGui(tk.Frame):
         for y in range(0, self.height, self.square_size):
             for x in range(0, self.width, self.square_size):
                 x0, y0, x1, y1 = x, y, x + self.square_size, y + self.square_size
-                self.canvas.create_rectangle(x0, y0, x1, y1, fill=colors[color], tags="square")
+                coords = x0, y0, x1, y1
+                square = self.canvas.create_rectangle(coords, fill=colors[color], tags="square")
                 color = abs(color - 1)
+                self.squares.append(square)
             colors.reverse()
         self.canvas.tag_bind("square", "<Button-1>", self.square_event)
 
@@ -36,7 +39,7 @@ class GameGui(tk.Frame):
         pieces = self.game.board.get_all_pieces()
         for piece in pieces:
             column, line = piece.position
-            margin = 1  # Value to make the piece fits perfectly inside the square
+            margin = 2  # Value to make the piece fits perfectly inside the square
             x, y = column * self.square_size + margin, line * self.square_size + margin
             image = tk.PhotoImage(file=piece.image)
             self.canvas.create_image(x, y, image=image, anchor=tk.NW, tags="piece")
@@ -57,7 +60,7 @@ class GameGui(tk.Frame):
     def piece_event(self, event):
         x, y = event.x, event.y
         square_x, square_y = self.find_square(x, y)
-        column, line = square_x//self.square_size, square_y//self.square_size
+        column, line = int(square_x/self.square_size), int(square_y/self.square_size)
         clicked_piece = self.game.board.get(column, line)
         if clicked_piece.color != self.game.turn:
             if self.game.selected_piece is not None:
@@ -70,7 +73,7 @@ class GameGui(tk.Frame):
     def move_event(self, event):
         x, y = event.x, event.y
         square_x, square_y = self.find_square(x, y)
-        column, line = square_x//self.square_size, square_y//self.square_size
+        column, line = int(square_x/self.square_size), int(square_y/self.square_size)
         move = column, line
         try:
             self.game.move_selected_piece(move)
@@ -84,11 +87,10 @@ class GameGui(tk.Frame):
         self.highlight_king_in_check(king_in_check)
 
     def find_square(self, x, y):
-        for posy in range(0, self.height, self.square_size):
-            for posx in range(0, self.width, self.square_size):
-                x0, y0, x1, y1 = posx, posy, posx + self.square_size, posy + self.square_size
-                if x0 <= x < x1 and y0 <= y < y1:
-                    return x0, y0
+        for square in self.squares:
+            x0, y0, x1, y1 = self.canvas.coords(square)
+            if x0 <= x <= x1 and y0 <= y <= y1:
+                return x0, y0
 
     def highlight_piece(self, x, y):
         border = 3  # Value to make the border fits inside the square
