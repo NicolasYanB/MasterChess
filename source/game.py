@@ -97,6 +97,12 @@ class Game:
             captured_piece = self.__board.get(*destination)
             self.__captured_pieces.append(captured_piece)
             self.__board.remove(*destination)
+        if self.__selected_piece.type == "pawn" and self.__en_passant_pawn != 0:
+            pawn_direction = self.__selected_piece.direction
+            if destination[1] == self.__en_passant_pawn.position[1] + pawn_direction:
+                self.__captured_pieces.append(self.__en_passant_pawn)
+                self.__board.remove(self.__en_passant_pawn)
+                self.__en_passant_pawn = 0
         if self.__is_susceptible_to_en_passant(self.__selected_piece, destination):
             self.__en_passant_pawn = self.__selected_piece
         else:
