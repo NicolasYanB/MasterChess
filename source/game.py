@@ -134,6 +134,13 @@ class Game:
                 self.__captured_pieces.append(self.__en_passant_pawn)
                 self.__board.remove(self.__en_passant_pawn)
                 self.__en_passant_pawn = 0
+        if self.__selected_piece.type == "king":
+            move_delta = self.__selected_piece.position[0] - destination[0]
+            if abs(move_delta) == 2:
+                castling_rook = self.__find_castling_rook(destination)
+                direction = move_delta//abs(move_delta)
+                rook_movement = destination[0] + direction, destination[1]
+                self.__board.move(castling_rook, rook_movement)
         if self.__is_susceptible_to_en_passant(self.__selected_piece, destination):
             self.__en_passant_pawn = self.__selected_piece
         else:
@@ -147,6 +154,15 @@ class Game:
                 king.in_check = True
                 continue
             king.in_check = False
+
+    def __find_castling_rook(self, king_destination):
+        column, line = king_destination
+        if column == 2:
+            rook_column = 0
+        if column == 6:
+            rook_column = 7
+        rook = self.__board.get(rook_column, line)
+        return rook
 
     def __is_susceptible_to_en_passant(self, piece, move):
         if piece.type != "pawn":
