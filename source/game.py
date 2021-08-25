@@ -71,6 +71,25 @@ class Game:
                     return verified_column, line + vertical_direction
         return False
 
+    def __king_castling(self):
+        if self.__selected_piece.type != "king":
+            return False
+        if self.__selected_piece.moved:
+            return False
+        castling_moves = []
+        column, line = self.__selected_piece.position
+        for delta in (1, -1):
+            current_column = column
+            while True:
+                current_column += delta
+                if current_column == 0 or current_column == 7:
+                    castling_column = column + 2 * delta
+                    castling_moves.append((castling_column, line))
+                    break
+                if not self.__board.is_empty(current_column, line):
+                    break
+        return castling_moves
+
     def __get_valid_moves(self, piece):
         piece_possible_moves = piece.get_possible_moves(self.__board)
         piece_valid_moves = []
@@ -78,8 +97,11 @@ class Game:
             if not self.__let_king_vulnerable(piece, move):
                 piece_valid_moves.append(move)
         en_passant = self.__pawn_en_passant()
+        castling = self.__king_castling()
         if en_passant and not self.__let_king_vulnerable(piece, en_passant):
             piece_valid_moves.append(en_passant)
+        if castling:
+            piece_valid_moves += castling
         return piece_valid_moves
 
     def __let_king_vulnerable(self, piece, move):
