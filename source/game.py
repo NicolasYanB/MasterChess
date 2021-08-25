@@ -68,7 +68,10 @@ class Game:
                 piece = self.__board.get(verified_column, line)
                 if piece == self.__en_passant_pawn:
                     vertical_direction = self.__selected_piece.direction
-                    return verified_column, line + vertical_direction
+                    en_passant_move = verified_column, line + vertical_direction
+                    if self.__let_king_vulnerable(self.__selected_piece, en_passant_move):
+                        return False
+                    return en_passant_move
         return False
 
     def __king_castling(self):
@@ -98,7 +101,7 @@ class Game:
                 piece_valid_moves.append(move)
         en_passant = self.__pawn_en_passant()
         castling = self.__king_castling()
-        if en_passant and not self.__let_king_vulnerable(piece, en_passant):
+        if en_passant:
             piece_valid_moves.append(en_passant)
         if castling:
             piece_valid_moves += castling
