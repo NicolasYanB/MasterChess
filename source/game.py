@@ -78,7 +78,7 @@ class Game:
             if not self.__let_king_vulnerable(piece, move):
                 piece_valid_moves.append(move)
         en_passant = self.__pawn_en_passant()
-        if en_passant:
+        if en_passant and not self.__let_king_vulnerable(piece, en_passant):
             piece_valid_moves.append(en_passant)
         return piece_valid_moves
 
@@ -87,6 +87,9 @@ class Game:
         board_copy = deepcopy(self.__board)
         column, line = piece.position
         piece_copy = board_copy.get(column, line)
+        if piece_copy.type == "pawn" and self.__en_passant_pawn != 0:
+            if move[1] == self.__en_passant_pawn.position[1] + piece_copy.direction:
+                board_copy.remove(self.__en_passant_pawn)
         board_copy.remove(*move)
         board_copy.move(piece_copy, move)
         ally_king = board_copy.get_all("king", piece_copy.color)[0]
