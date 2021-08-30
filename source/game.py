@@ -101,6 +101,13 @@ class Game:
                 current_column += delta
                 if current_column == 0 or current_column == 7:
                     castling_column = column + 2 * delta
+                    if self.__board.is_empty(current_column, line):
+                        break
+                    piece = self.__board.get(current_column, line)
+                    if piece.color != self.__selected_piece.color or piece.type != "rook":
+                        break
+                    if piece.moved:
+                        break
                     castling_moves.append((castling_column, line))
                     break
                 if not self.__board.is_empty(current_column, line):
