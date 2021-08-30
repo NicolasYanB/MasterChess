@@ -56,7 +56,21 @@ class Game:
     def get_selected_piece_moves(self):
         return self.__get_valid_moves(self.__selected_piece)
 
-    def __pawn_en_passant(self):
+    def __get_valid_moves(self, piece):
+        piece_possible_moves = piece.get_possible_moves(self.__board)
+        piece_valid_moves = []
+        for move in piece_possible_moves:
+            if not self.__let_king_vulnerable(piece, move):
+                piece_valid_moves.append(move)
+        en_passant = self.__get_pawn_en_passant()
+        castling = self.__get_king_castling()
+        if en_passant:
+            piece_valid_moves.append(en_passant)
+        if castling:
+            piece_valid_moves += castling
+        return piece_valid_moves
+
+    def __get_pawn_en_passant(self):
         if self.__selected_piece.type != "pawn":
             return False
         column, line = self.__selected_piece.position
@@ -74,7 +88,7 @@ class Game:
                     return en_passant_move
         return False
 
-    def __king_castling(self):
+    def __get_king_castling(self):
         if self.__selected_piece.type != "king":
             return False
         if self.__selected_piece.moved:
@@ -92,20 +106,6 @@ class Game:
                 if not self.__board.is_empty(current_column, line):
                     break
         return castling_moves
-
-    def __get_valid_moves(self, piece):
-        piece_possible_moves = piece.get_possible_moves(self.__board)
-        piece_valid_moves = []
-        for move in piece_possible_moves:
-            if not self.__let_king_vulnerable(piece, move):
-                piece_valid_moves.append(move)
-        en_passant = self.__pawn_en_passant()
-        castling = self.__king_castling()
-        if en_passant:
-            piece_valid_moves.append(en_passant)
-        if castling:
-            piece_valid_moves += castling
-        return piece_valid_moves
 
     def __let_king_vulnerable(self, piece, move):
         from copy import deepcopy
@@ -125,22 +125,11 @@ class Game:
         if destination not in selected_piece_possible_moves:
             raise InvalidMoveException("This piece can't be moved to this position")
         if not self.__board.is_empty(*destination):
-            captured_piece = self.__board.get(*destination)
-            self.__captured_pieces.append(captured_piece)
-            self.__board.remove(*destination)
+            self.__capture_movement(destination)
         if self.__selected_piece.type == "pawn" and self.__en_passant_pawn != 0:
-            pawn_direction = self.__selected_piece.direction
-            if destination[1] == self.__en_passant_pawn.position[1] + pawn_direction:
-                self.__captured_pieces.append(self.__en_passant_pawn)
-                self.__board.remove(self.__en_passant_pawn)
-                self.__en_passant_pawn = 0
+            self.__en_passant_movement(destination)
         if self.__selected_piece.type == "king":
-            move_delta = self.__selected_piece.position[0] - destination[0]
-            if abs(move_delta) == 2:
-                castling_rook = self.__find_castling_rook(destination)
-                direction = move_delta//abs(move_delta)
-                rook_movement = destination[0] + direction, destination[1]
-                self.__board.move(castling_rook, rook_movement)
+            self.__castling_movement(destination)
         if self.__is_susceptible_to_en_passant(self.__selected_piece, destination):
             self.__en_passant_pawn = self.__selected_piece
         else:
@@ -148,12 +137,32 @@ class Game:
         self.__board.move(self.__selected_piece, destination)
         self.__selected_piece.moved = True
         self.__turn = "black" if self.__turn == "white" else "white"
-        for color in ("white", "black"):
-            king = self.__board.get_all("king", color=color)[0]
+        kings = self.__board.get_all("king")
+        for king in kings:
             if self.__is_in_check(king, self.__board):
                 king.in_check = True
                 continue
             king.in_check = False
+
+    def __capture_movement(self, move_position):
+        captured_piece = self.__board.get(*move_position)
+        self.__captured_pieces.append(captured_piece)
+        self.__board.remove(*move_position)
+
+    def __en_passant_movement(self, move_position):
+        pawn_direction = self.__selected_piece.direction
+        if move_position[1] == self.__en_passant_pawn.position[1] + pawn_direction:
+            self.__captured_pieces.append(self.__en_passant_pawn)
+            self.__board.remove(self.__en_passant_pawn)
+            self.__en_passant_pawn = 0
+
+    def __castling_movement(self, move_position):
+        move_delta = self.__selected_piece.position[0] - move_position[0]
+        if abs(move_delta) == 2:
+            castling_rook = self.__find_castling_rook(move_position)
+            direction = move_delta//abs(move_delta)
+            rook_movement = move_position[0] + direction, move_position[1]
+            self.__board.move(castling_rook, rook_movement)
 
     def __find_castling_rook(self, king_destination):
         column, line = king_destination
