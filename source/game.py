@@ -89,31 +89,27 @@ class Game:
         return False
 
     def __get_king_castling(self):
-        if self.__selected_piece.type != "king":
-            return False
-        if self.__selected_piece.moved:
+        if self.__selected_piece.type != "king" or self.__selected_piece.moved:
             return False
         if self.__selected_piece.in_check:
             return False
+        king = self.__selected_piece
         castling_moves = []
         column, line = self.__selected_piece.position
         for delta in (1, -1):
             current_column = column
             while True:
                 current_column += delta
-                if (current_column, line) in self.__selected_piece.get_possible_moves(self.__board):
-                    if self.__let_king_vulnerable(self.__selected_piece, (current_column, line)):
-                        break
                 if current_column == 0 or current_column == 7:
                     castling_column = column + 2 * delta
+                    if self.__let_king_vulnerable(king, (castling_column - 1 * delta, line)):
+                        break
+                    if self.__let_king_vulnerable(king, (castling_column, line)):
+                        break
                     if self.__board.is_empty(current_column, line):
                         break
-                    if self.__let_king_vulnerable(self.__selected_piece, (castling_column, line)):
-                        break
                     piece = self.__board.get(current_column, line)
-                    if piece.color != self.__selected_piece.color or piece.type != "rook":
-                        break
-                    if piece.moved:
+                    if piece.color != king.color or piece.type != "rook" or piece.moved:
                         break
                     castling_moves.append((castling_column, line))
                     break
