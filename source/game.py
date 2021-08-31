@@ -93,6 +93,8 @@ class Game:
             return False
         if self.__selected_piece.moved:
             return False
+        if self.__selected_piece.in_check:
+            return False
         castling_moves = []
         column, line = self.__selected_piece.position
         for delta in (1, -1):
