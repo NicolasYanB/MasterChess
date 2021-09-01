@@ -5,7 +5,7 @@ from source import Game, InvalidMoveException
 class GameGui(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
-        self.width, self.height = 712, 712
+        self.width = self.height = 712
         self.squares = []
         master.geometry(f"{self.width}x{self.height}")
         master.resizable(False, False)
@@ -147,7 +147,10 @@ class GameGui(tk.Frame):
 
 class PromotionWindow(tk.Toplevel):
     def __init__(self):
-        super().__init__()
+        width = height = 178
+        super().__init__(width=width, height=height)
+        self.title("Promotion")
+        self.resizable(False, False)
 
 
 if __name__ == '__main__':
