@@ -136,11 +136,8 @@ class Game:
             raise InvalidMoveException("This piece can't be moved to this position")
         if not self.__board.is_empty(*destination):
             self.__capture_movement(destination)
-        if self.__selected_piece.type == "pawn":
-            if self.__en_passant_pawn != 0:
-                self.__en_passant_movement(destination)
-            if destination[1] == 0 or destination[1] == 7:
-                print("Promotion")
+        if self.__selected_piece.type == "pawn" and self.__en_passant_pawn != 0:
+            self.__en_passant_movement(destination)
         if self.__selected_piece.type == "king":
             self.__castling_movement(destination)
         if self.__is_susceptible_to_en_passant(self.__selected_piece, destination):

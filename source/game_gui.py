@@ -80,11 +80,22 @@ class GameGui(tk.Frame):
         except InvalidMoveException:
             self.unselect()
             return
+        moved_piece = self.game.selected_piece
         self.unselect()
         self.canvas.delete("piece")
         self.draw_pieces()
         king_in_check = self.game.get_king_in_check()
         self.highlight_king_in_check(king_in_check)
+        if self.was_promoted(moved_piece):
+            promotion_window = PromotionWindow()
+            promotion_window.mainloop()
+
+    def was_promoted(self, piece):
+        if piece.type == "pawn":
+            line = piece.position[1]
+            if line == 0 or line == 7:
+                return True
+        return False
 
     def find_square(self, x, y):
         for square in self.squares:
@@ -132,6 +143,11 @@ class GameGui(tk.Frame):
         self.game.unselect()
         self.canvas.delete("selected")
         self.canvas.delete("move")
+
+
+class PromotionWindow(tk.Toplevel):
+    def __init__(self):
+        super().__init__()
 
 
 if __name__ == '__main__':
