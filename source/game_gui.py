@@ -147,10 +147,31 @@ class GameGui(tk.Frame):
 
 class PromotionWindow(tk.Toplevel):
     def __init__(self):
-        width = height = 178
-        super().__init__(width=width, height=height)
+        self.width = self.height = 178
+        super().__init__(width=self.width, height=self.height)
         self.title("Promotion")
         self.resizable(False, False)
+        self.canvas = tk.Canvas(self, width=self.width, height=self.height)
+        self.canvas.pack()
+        self.set_components()
+
+    def set_components(self):
+        self.draw_board()
+
+    def draw_board(self):
+        light_square = "#eeeed2"
+        dark_square = "#769656"
+        square_side = self.width//2
+        colors = [light_square, dark_square]
+        color = 0
+        for y in range(2):
+            for x in range(2):
+                x1, y1 = square_side * x, square_side * y
+                x2, y2 = x1 + square_side, y1 + square_side
+                coords = x1, y1, x2, y2
+                self.canvas.create_rectangle(coords, fill=colors[color], tags="square")
+                color = abs(color - 1)
+            colors.reverse()
 
 
 if __name__ == '__main__':
