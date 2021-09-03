@@ -1,5 +1,6 @@
 import tkinter as tk
 from source import Game, InvalidMoveException
+from source import Queen, Rook, Bishop, Knight
 
 
 class GameGui(tk.Frame):
@@ -87,7 +88,7 @@ class GameGui(tk.Frame):
         king_in_check = self.game.get_king_in_check()
         self.highlight_king_in_check(king_in_check)
         if self.was_promoted(moved_piece):
-            promotion_window = PromotionWindow(moved_piece.color)
+            promotion_window = PromotionWindow(self, moved_piece)
             promotion_window.mainloop()
 
     def was_promoted(self, piece):
@@ -96,6 +97,12 @@ class GameGui(tk.Frame):
             if line == 0 or line == 7:
                 return True
         return False
+
+    def promote(self, promoted_piece, new_piece):
+        self.game.board.remove(promoted_piece)
+        self.game.board.add(new_piece)
+        self.canvas.delete("piece")
+        self.draw_pieces()
 
     def find_square(self, x, y):
         for square in self.squares:
@@ -146,11 +153,13 @@ class GameGui(tk.Frame):
 
 
 class PromotionWindow(tk.Toplevel):
-    def __init__(self, color):
+    def __init__(self, master, pawn):
         self.width = self.height = 178
         self.square_side = self.width//2
-        self.color = color
+        self.color = pawn.color
+        self.pawn = pawn
         super().__init__(width=self.width, height=self.height)
+        self.master = master
         self.title("Promotion")
         self.resizable(False, False)
         self.canvas = tk.Canvas(self, width=self.width, height=self.height)
@@ -201,8 +210,14 @@ class PromotionWindow(tk.Toplevel):
         tags = self.canvas.gettags(clicked_object)
         for piece in pieces:
             if piece in tags:
-                print(piece)
-                return
+                self.promote_to(piece)
+
+    def promote_to(self, type):
+        pieces = {"queen": Queen, "rook": Rook,
+                  "bishop": Bishop, "knight": Knight}
+        promoted_piece = pieces[type](self.color, self.pawn.position)
+        self.master.promote(self.pawn, promoted_piece)
+        self.destroy()
 
 
 if __name__ == '__main__':
