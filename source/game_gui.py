@@ -87,7 +87,7 @@ class GameGui(tk.Frame):
         king_in_check = self.game.get_king_in_check()
         self.highlight_king_in_check(king_in_check)
         if self.was_promoted(moved_piece):
-            promotion_window = PromotionWindow()
+            promotion_window = PromotionWindow(moved_piece.color)
             promotion_window.mainloop()
 
     def was_promoted(self, piece):
@@ -146,8 +146,10 @@ class GameGui(tk.Frame):
 
 
 class PromotionWindow(tk.Toplevel):
-    def __init__(self):
+    def __init__(self, color):
         self.width = self.height = 178
+        self.square_side = self.width//2
+        self.color = color
         super().__init__(width=self.width, height=self.height)
         self.title("Promotion")
         self.resizable(False, False)
@@ -157,21 +159,38 @@ class PromotionWindow(tk.Toplevel):
 
     def set_components(self):
         self.draw_board()
+        self.draw_pieces()
 
     def draw_board(self):
         light_square = "#eeeed2"
         dark_square = "#769656"
-        square_side = self.width//2
         colors = [light_square, dark_square]
         color = 0
         for y in range(2):
             for x in range(2):
-                x1, y1 = square_side * x, square_side * y
-                x2, y2 = x1 + square_side, y1 + square_side
+                x1, y1 = self.square_side * x, self.square_side * y
+                x2, y2 = x1 + self.square_side, y1 + self.square_side
                 coords = x1, y1, x2, y2
                 self.canvas.create_rectangle(coords, fill=colors[color], tags="square")
                 color = abs(color - 1)
             colors.reverse()
+
+    def draw_pieces(self):
+        self.pieces = []
+        queen_image = f"images/pieces/{self.color}/queen.png"
+        rook_image = f"images/pieces/{self.color}/rook.png"
+        bishop_image = f"images/pieces/{self.color}/bishop.png"
+        knight_image = f"images/pieces/{self.color}/knight.png"
+        images = [queen_image, rook_image, bishop_image, knight_image]
+        margin = 2
+        c = 0
+        for y in range(2):
+            for x in range(2):
+                x0, y0 = self.square_side * x + margin, self.square_side * y + margin
+                image = tk.PhotoImage(file=images[c])
+                self.pieces.append(image)
+                self.canvas.create_image(x0, y0, image=image, anchor=tk.NW, tags="piece")
+                c += 1
 
 
 if __name__ == '__main__':
