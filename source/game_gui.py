@@ -181,16 +181,28 @@ class PromotionWindow(tk.Toplevel):
         rook_image = f"images/pieces/{self.color}/rook.png"
         bishop_image = f"images/pieces/{self.color}/bishop.png"
         knight_image = f"images/pieces/{self.color}/knight.png"
-        images = [queen_image, rook_image, bishop_image, knight_image]
+        images = {"queen": queen_image, "rook": rook_image,
+                  "bishop": bishop_image, "knight": knight_image}
         margin = 2
         c = 0
         for y in range(2):
             for x in range(2):
                 x0, y0 = self.square_side * x + margin, self.square_side * y + margin
-                image = tk.PhotoImage(file=images[c])
+                piece = list(images.keys())[c]
+                image = tk.PhotoImage(file=images[piece])
                 self.pieces.append(image)
-                self.canvas.create_image(x0, y0, image=image, anchor=tk.NW, tags="piece")
+                self.canvas.create_image(x0, y0, image=image, anchor=tk.NW, tags=f"piece {piece}")
                 c += 1
+        self.canvas.tag_bind("piece", "<Button-1>", self.click_event)
+
+    def click_event(self, event):
+        pieces = ["queen", "rook", "bishop", "knight"]
+        clicked_object = event.widget.find_withtag("current")
+        tags = self.canvas.gettags(clicked_object)
+        for piece in pieces:
+            if piece in tags:
+                print(piece)
+                return
 
 
 if __name__ == '__main__':
