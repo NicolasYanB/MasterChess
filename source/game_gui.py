@@ -8,6 +8,7 @@ class GameGui(tk.Frame):
         super().__init__(master)
         self.width = self.height = 712
         self.squares = []
+        self.stop_game = False
         master.geometry(f"{self.width}x{self.height}")
         master.resizable(False, False)
         master.title("Master Chess")
@@ -48,6 +49,8 @@ class GameGui(tk.Frame):
         self.canvas.tag_bind("piece", "<Button-1>", self.piece_event)
 
     def square_event(self, event):
+        if self.stop_game:
+            return
         x, y = event.x, event.y
         square_x, square_y = self.find_square(x, y)
         square_coords = square_x, square_y, square_x + self.square_size, square_y + self.square_size
@@ -59,6 +62,8 @@ class GameGui(tk.Frame):
         self.unselect()
 
     def piece_event(self, event):
+        if self.stop_game:
+            return
         x, y = event.x, event.y
         square_x, square_y = self.find_square(x, y)
         column, line = int(square_x/self.square_size), int(square_y/self.square_size)
@@ -72,6 +77,8 @@ class GameGui(tk.Frame):
         self.highlight_piece(square_x, square_y)
 
     def move_event(self, event):
+        if self.stop_game:
+            return
         x, y = event.x, event.y
         square_x, square_y = self.find_square(x, y)
         column, line = int(square_x/self.square_size), int(square_y/self.square_size)
@@ -155,11 +162,12 @@ class GameGui(tk.Frame):
 class PromotionWindow(tk.Toplevel):
     def __init__(self, master, pawn):
         self.width = self.height = 178
+        super().__init__(width=self.width, height=self.height)
+        self.master = master
+        self.master.stop_game = True
         self.square_side = self.width//2
         self.color = pawn.color
         self.pawn = pawn
-        super().__init__(width=self.width, height=self.height)
-        self.master = master
         self.title("Promotion")
         self.resizable(False, False)
         self.canvas = tk.Canvas(self, width=self.width, height=self.height)
@@ -217,6 +225,7 @@ class PromotionWindow(tk.Toplevel):
                   "bishop": Bishop, "knight": Knight}
         promoted_piece = pieces[type](self.color, self.pawn.position)
         self.master.promote(self.pawn, promoted_piece)
+        self.master.stop_game = False
         self.destroy()
 
 
