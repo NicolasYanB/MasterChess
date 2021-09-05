@@ -170,9 +170,13 @@ class PromotionWindow(tk.Toplevel):
         self.pawn = pawn
         self.title("Promotion")
         self.resizable(False, False)
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.canvas = tk.Canvas(self, width=self.width, height=self.height)
         self.canvas.pack()
         self.set_components()
+
+    def on_closing(self):
+        pass
 
     def set_components(self):
         self.draw_board()
