@@ -153,6 +153,14 @@ class Game:
                 king.in_check = True
                 continue
             king.in_check = False
+        return self.__get_game_status()
+
+    def __get_game_status(self):
+        pieces = self.__board.get_all_of(self.__turn)
+        for piece in pieces:
+            if len(self.__get_valid_moves(piece)) > 0:
+                return 0
+        return 1
 
     def __capture_movement(self, move_position):
         captured_piece = self.__board.get(*move_position)

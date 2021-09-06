@@ -83,8 +83,9 @@ class GameGui(tk.Frame):
         square_x, square_y = self.find_square(x, y)
         column, line = int(square_x/self.square_size), int(square_y/self.square_size)
         move = column, line
+        game_status = 0
         try:
-            self.game.move_selected_piece(move)
+            game_status = self.game.move_selected_piece(move)
         except InvalidMoveException:
             self.unselect()
             return
@@ -97,6 +98,12 @@ class GameGui(tk.Frame):
         if self.was_promoted(moved_piece):
             promotion_window = PromotionWindow(self, moved_piece)
             promotion_window.mainloop()
+        if game_status != 0:
+            self.end_game(game_status)
+
+    def end_game(self, game_status):
+        if game_status == 1:
+            print("Checkmate")
 
     def was_promoted(self, piece):
         if piece.type == "pawn":
