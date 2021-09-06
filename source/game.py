@@ -156,11 +156,26 @@ class Game:
         return self.__get_game_status()
 
     def __get_game_status(self):
+        if self.__is_checkmate():
+            return 1
+        if self.__is_stalemate():
+            return 2
+        return 0
+
+    def __is_checkmate(self):
+        pieces = self.__board.get_all_of(self.__turn)
+        king = self.__board.get_all("king", self.__turn)[0]
+        for piece in pieces:
+            if len(self.__get_valid_moves(piece)) > 0:
+                return False
+        return self.__is_in_check(king, self.__board)
+
+    def __is_stalemate(self):
         pieces = self.__board.get_all_of(self.__turn)
         for piece in pieces:
             if len(self.__get_valid_moves(piece)) > 0:
-                return 0
-        return 1
+                return False
+        return True
 
     def __capture_movement(self, move_position):
         captured_piece = self.__board.get(*move_position)
