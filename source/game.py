@@ -17,6 +17,7 @@ class Game:
         self.__captured_pieces = []
         self.__turn = "white"
         self.__en_passant_pawn = 0
+        self.__history = []
 
     @property
     def board(self):
@@ -135,9 +136,12 @@ class Game:
         if destination not in selected_piece_possible_moves:
             raise InvalidMoveException("This piece can't be moved to this position")
         if not self.__board.is_empty(*destination):
+            self.__history = []
             self.__capture_movement(destination)
-        if self.__selected_piece.type == "pawn" and self.__en_passant_pawn != 0:
-            self.__en_passant_movement(destination)
+        if self.__selected_piece.type == "pawn":
+            self.__history = []
+            if self.__en_passant_pawn != 0:
+                self.__en_passant_movement(destination)
         if self.__selected_piece.type == "king":
             self.__castling_movement(destination)
         if self.__is_susceptible_to_en_passant(self.__selected_piece, destination):
@@ -153,6 +157,8 @@ class Game:
                 king.in_check = True
                 continue
             king.in_check = False
+        game_status = self.__get_board_status()
+        self.__history.append(game_status)
         return self.__get_game_status()
 
     def __get_game_status(self):
@@ -160,6 +166,8 @@ class Game:
             return 1
         if self.__is_stalemate():
             return 2
+        if self.__is_threefold_repetition():
+            return 3
         return 0
 
     def __is_checkmate(self):
@@ -176,6 +184,18 @@ class Game:
             if len(self.__get_valid_moves(piece)) > 0:
                 return False
         return True
+
+    def __is_threefold_repetition(self):
+        if len(self.__history) < 3:
+            return False
+        actual_status = self.__history[-1]
+        repetitions = 0
+        for game_status in self.__history[:-1]:
+            if game_status == actual_status:
+                repetitions += 1
+            if repetitions == 2:
+                return True
+        return False
 
     def __capture_movement(self, move_position):
         captured_piece = self.__board.get(*move_position)
@@ -229,6 +249,14 @@ class Game:
             if king.in_check:
                 return king
         return 0
+
+    def __get_board_status(self):
+        pieces = self.__board.get_all_pieces()
+        game_status = []
+        for piece in pieces:
+            line = f"{piece.color} {piece.type} {len(self.__get_valid_moves(piece))}"
+            game_status.append(line)
+        return ' '.join(game_status)
 
 
 class Board:
