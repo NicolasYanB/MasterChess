@@ -151,6 +151,8 @@ class Game:
         self.__board.move(self.__selected_piece, destination)
         self.__selected_piece.moved = True
         self.__turn = "black" if self.__turn == "white" else "white"
+
+    def post_movement_actions(self):
         kings = self.__board.get_all("king")
         for king in kings:
             if self.__is_in_check(king, self.__board):

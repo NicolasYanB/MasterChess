@@ -85,10 +85,11 @@ class GameGui(tk.Frame):
         move = column, line
         game_status = 0
         try:
-            game_status = self.game.move_selected_piece(move)
+            self.game.move_selected_piece(move)
         except InvalidMoveException:
             self.unselect()
             return
+        game_status = self.game.post_movement_actions()
         moved_piece = self.game.selected_piece
         self.unselect()
         self.canvas.delete("piece")
@@ -103,7 +104,7 @@ class GameGui(tk.Frame):
 
     def end_game(self, game_status):
         if game_status == 1:
-            print("Checkmate")
+            print("checkmate")
         if game_status == 2:
             print("stalemate")
         if game_status == 3:
