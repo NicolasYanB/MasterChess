@@ -18,6 +18,7 @@ class Game:
         self.__turn = "white"
         self.__en_passant_pawn = 0
         self.__history = []
+        self.__fifty_moves_counter = 0
 
     @property
     def board(self):
@@ -132,13 +133,16 @@ class Game:
         return self.__is_in_check(ally_king, board_copy)
 
     def move_selected_piece(self, destination):
+        self.__fifty_moves_counter += 0.5
         selected_piece_possible_moves = self.get_selected_piece_moves()
         if destination not in selected_piece_possible_moves:
             raise InvalidMoveException("This piece can't be moved to this position")
         if not self.__board.is_empty(*destination):
+            self.__fifty_moves_counter = 0
             self.__history = []
             self.__capture_movement(destination)
         if self.__selected_piece.type == "pawn":
+            self.__fifty_moves_counter = 0
             self.__history = []
             if self.__en_passant_pawn != 0:
                 self.__en_passant_movement(destination)
@@ -170,6 +174,8 @@ class Game:
             return 2
         if self.__is_threefold_repetition():
             return 3
+        if self.__fifty_moves_counter == 50:
+            return 4
         return 0
 
     def __is_checkmate(self):

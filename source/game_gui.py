@@ -109,6 +109,8 @@ class GameGui(tk.Frame):
             print("stalemate")
         if game_status == 3:
             print("threefold")
+        if game_status == 4:
+            print("fifty")
 
     def was_promoted(self, piece):
         if piece.type == "pawn":
