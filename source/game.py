@@ -176,6 +176,8 @@ class Game:
             return 3
         if self.__fifty_moves_counter == 50:
             return 4
+        if self.__is_insufficient_material():
+            return 5
         return 0
 
     def __is_checkmate(self):
@@ -203,6 +205,43 @@ class Game:
                 repetitions += 1
             if repetitions == 2:
                 return True
+        return False
+
+    def __is_insufficient_material(self):
+        white_pieces = self.__board.get_all_of("white")
+        black_pieces = self.__board.get_all_of("black")
+        if len(white_pieces) == 1 and len(black_pieces) == 1:
+            return True
+        if len(white_pieces) > 1 and len(black_pieces) == 1:
+            if all([piece.type == "bishop" or piece.type == "king" for piece in white_pieces]):
+                bishops = [piece for piece in white_pieces if piece.type == "bishop"]
+                if len(bishops) == len(white_pieces) - 1:
+                    get_bishop_square = lambda c, l: "white" if c % 2 == l % 2 else "black"
+                    bishops_squares = [get_bishop_square(*bishop.position) for bishop in bishops]
+                    if len(set(bishops_squares)) == 1:
+                        return True
+            if len(white_pieces) == 2:
+                if any([piece.type == "knight" for piece in white_pieces]):
+                    return True
+        if len(white_pieces) == 1 and len(black_pieces) > 1:
+            if any([piece.type == "bishop" for piece in black_pieces]):
+                bishops = [piece for piece in black_pieces if piece.type == "bishop"]
+                if len(bishops) == len(black_pieces) - 1:
+                    get_bishop_square = lambda c, l: "white" if c % 2 == l % 2 else "black"
+                    bishops_squares = [get_bishop_square(*bishop.position) for bishop in bishops]
+                    if len(set(bishops_squares)) == 1:
+                        return True
+            if len(black_pieces) == 2:
+                if any([piece.type == "knight" for piece in black_pieces]):
+                    return True
+        if len(white_pieces) > 1 and len(black_pieces) > 1:
+            bishops = [piece for piece in white_pieces if piece.type == "bishop"]
+            bishops += [piece for piece in black_pieces if piece.type == "bishop"]
+            if len(bishops) == len(white_pieces) + len(black_pieces) - 2:
+                get_bishop_square = lambda c, l: "white" if c % 2 == l % 2 else "black"
+                bishops_squares = [get_bishop_square(*bishop.position) for bishop in bishops]
+                if len(set(bishops_squares)) == 1:
+                    return True
         return False
 
     def __capture_movement(self, move_position):
