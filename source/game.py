@@ -301,7 +301,9 @@ class Game:
         pieces = self.__board.get_all_pieces()
         game_status = []
         for piece in pieces:
-            line = f"{piece.color} {piece.type} {len(self.__get_valid_moves(piece))}"
+            column, line = piece.position
+            moves = len(self.__get_valid_moves(piece))
+            line = f"{piece.color} {piece.type} {column} {line} {moves}"
             game_status.append(line)
         return ' '.join(game_status)
 
