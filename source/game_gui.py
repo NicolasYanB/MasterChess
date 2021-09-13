@@ -95,6 +95,7 @@ class GameGui(tk.Frame):
         self.canvas.delete("piece")
         self.draw_pieces()
         king_in_check = self.game.get_king_in_check()
+        self.canvas.delete("check")
         self.highlight_king_in_check(king_in_check)
         if self.was_promoted(moved_piece):
             promotion_window = PromotionWindow(self, moved_piece)
@@ -160,7 +161,6 @@ class GameGui(tk.Frame):
 
     def highlight_king_in_check(self, king):
         if king == 0:
-            self.canvas.delete("check")
             return
         column, line = king.position
         x, y = column * self.square_size, line * self.square_size
