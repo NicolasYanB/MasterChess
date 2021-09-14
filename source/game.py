@@ -307,6 +307,11 @@ class Game:
             game_status.append(line)
         return ' '.join(game_status)
 
+    def promote(self, promoted_piece, new_piece):
+        self.__board.remove(promoted_piece)
+        self.__board.add(new_piece)
+        self.__history = []
+
 
 class Board:
     def __init__(self):

@@ -83,23 +83,25 @@ class GameGui(tk.Frame):
         square_x, square_y = self.find_square(x, y)
         column, line = int(square_x/self.square_size), int(square_y/self.square_size)
         move = column, line
-        game_status = 0
         try:
             self.game.move_selected_piece(move)
         except InvalidMoveException:
             self.unselect()
             return
-        game_status = self.game.post_movement_actions()
         moved_piece = self.game.selected_piece
         self.unselect()
         self.canvas.delete("piece")
         self.draw_pieces()
-        king_in_check = self.game.get_king_in_check()
         self.canvas.delete("check")
-        self.highlight_king_in_check(king_in_check)
         if self.was_promoted(moved_piece):
             promotion_window = PromotionWindow(self, moved_piece)
             promotion_window.mainloop()
+        self.finish_move()
+
+    def finish_move(self):
+        game_status = self.game.post_movement_actions()
+        king_in_check = self.game.get_king_in_check()
+        self.highlight_king_in_check(king_in_check)
         if game_status != 0:
             self.end_game(game_status)
 
@@ -123,10 +125,10 @@ class GameGui(tk.Frame):
         return False
 
     def promote(self, promoted_piece, new_piece):
-        self.game.board.remove(promoted_piece)
-        self.game.board.add(new_piece)
+        self.game.promote(promoted_piece, new_piece)
         self.canvas.delete("piece")
         self.draw_pieces()
+        self.finish_move()
 
     def find_square(self, x, y):
         for square in self.squares:
