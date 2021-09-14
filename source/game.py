@@ -64,40 +64,40 @@ class Game:
         for move in piece_possible_moves:
             if not self.__let_king_vulnerable(piece, move):
                 piece_valid_moves.append(move)
-        en_passant = self.__get_pawn_en_passant()
-        castling = self.__get_king_castling()
+        en_passant = self.__get_pawn_en_passant(piece)
+        castling = self.__get_king_castling(piece)
         if en_passant:
             piece_valid_moves.append(en_passant)
         if castling:
             piece_valid_moves += castling
         return piece_valid_moves
 
-    def __get_pawn_en_passant(self):
-        if self.__selected_piece.type != "pawn":
+    def __get_pawn_en_passant(self, piece):
+        if piece.type != "pawn":
             return False
-        column, line = self.__selected_piece.position
+        column, line = piece.position
         for delta in (1, -1):
             verified_column = column + delta
             if verified_column < 0 or verified_column > 7:
                 continue
             if not self.__board.is_empty(verified_column, line):
-                piece = self.__board.get(verified_column, line)
-                if piece == self.__en_passant_pawn:
-                    vertical_direction = self.__selected_piece.direction
+                p = self.__board.get(verified_column, line)
+                if p == self.__en_passant_pawn:
+                    vertical_direction = piece.direction
                     en_passant_move = verified_column, line + vertical_direction
-                    if self.__let_king_vulnerable(self.__selected_piece, en_passant_move):
+                    if self.__let_king_vulnerable(piece, en_passant_move):
                         return False
                     return en_passant_move
         return False
 
-    def __get_king_castling(self):
-        if self.__selected_piece.type != "king" or self.__selected_piece.moved:
+    def __get_king_castling(self, piece):
+        if piece.type != "king" or piece.moved:
             return False
-        if self.__selected_piece.in_check:
+        if piece.in_check:
             return False
-        king = self.__selected_piece
+        king = piece
         castling_moves = []
-        column, line = self.__selected_piece.position
+        column, line = piece.position
         for delta in (1, -1):
             current_column = column
             while True:
@@ -134,7 +134,7 @@ class Game:
 
     def move_selected_piece(self, destination):
         self.__fifty_moves_counter += 0.5
-        selected_piece_possible_moves = self.get_selected_piece_moves()
+        selected_piece_possible_moves = self.__get_valid_moves(self.__selected_piece)
         if destination not in selected_piece_possible_moves:
             raise InvalidMoveException("This piece can't be moved to this position")
         if not self.__board.is_empty(*destination):
