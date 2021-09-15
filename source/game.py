@@ -303,7 +303,7 @@ class Game:
         for piece in pieces:
             column, line = piece.position
             moves = len(self.__get_valid_moves(piece))
-            line = f"{piece.color} {piece.type} {column} {line} {moves}"
+            line = f"{self.__turn} {piece.color} {piece.type} {column} {line} {moves}"
             game_status.append(line)
         return ' '.join(game_status)
 
