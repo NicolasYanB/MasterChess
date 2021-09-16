@@ -107,8 +107,10 @@ class GameGui(tk.Frame):
             self.end_game(game_status)
 
     def end_game(self, game_status):
+        self.stop_game = True
+        end_game_window = 0
         if game_status == 1:
-            print("checkmate")
+            end_game_window = CheckmateWindow()
         if game_status == 2:
             print("stalemate")
         if game_status == 3:
@@ -117,6 +119,7 @@ class GameGui(tk.Frame):
             print("fifty")
         if game_status == 5:
             print("insufficient")
+        end_game_window.mainloop()
 
     def was_promoted(self, piece):
         if piece.type == "pawn":
@@ -250,6 +253,15 @@ class PromotionWindow(tk.Toplevel):
         self.master.promote(self.pawn, promoted_piece)
         self.master.stop_game = False
         self.destroy()
+
+
+class CheckmateWindow(tk.Toplevel):
+    def __init__(self):
+        self.width = 300
+        self.height = 150
+        super().__init__(width=self.width, height=self.height)
+        self.title("Checkmate")
+        self.resizable(False, False)
 
 
 if __name__ == '__main__':
