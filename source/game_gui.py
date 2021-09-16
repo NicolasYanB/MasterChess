@@ -96,7 +96,8 @@ class GameGui(tk.Frame):
         if self.was_promoted(moved_piece):
             promotion_window = PromotionWindow(self, moved_piece)
             promotion_window.mainloop()
-        self.finish_move()
+        else:
+            self.finish_move()
 
     def finish_move(self):
         game_status = self.game.post_movement_actions()
