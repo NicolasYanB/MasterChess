@@ -110,7 +110,8 @@ class GameGui(tk.Frame):
         self.stop_game = True
         end_game_window = 0
         if game_status == 1:
-            end_game_window = CheckmateWindow()
+            winner = "white" if self.game.turn == "black" else "white"
+            end_game_window = CheckmateWindow(winner)
         if game_status == 2:
             print("stalemate")
         if game_status == 3:
@@ -256,12 +257,31 @@ class PromotionWindow(tk.Toplevel):
 
 
 class CheckmateWindow(tk.Toplevel):
-    def __init__(self):
+    def __init__(self, winner):
         self.width = 300
-        self.height = 150
+        self.height = 100
+        self.winner = winner
         super().__init__(width=self.width, height=self.height)
         self.title("Checkmate")
         self.resizable(False, False)
+        self.set_components()
+
+    def set_components(self):
+        self.set_label()
+        self.set_buttons()
+
+    def set_label(self):
+        text = f"{self.winner} wins"
+        label = tk.Label(self, text=text, font="sans-serif 15 bold")
+        label.place(x=90, y=10)
+
+    def set_buttons(self):
+        new_game_btn = tk.Button(self, text="New Game")
+        main_menu_btn = tk.Button(self, text="Main Menu")
+        close_btn = tk.Button(self, text="Exit")
+        new_game_btn.place(x=10, y=50)
+        main_menu_btn.place(x=120, y=50)
+        close_btn.place(x=230, y=50)
 
 
 if __name__ == '__main__':
