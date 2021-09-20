@@ -257,33 +257,20 @@ class PromotionWindow(tk.Toplevel):
         self.destroy()
 
 
-class CheckmateWindow(tk.Toplevel):
-    def __init__(self, master, winner):
-        self.width = 300
-        self.height = 100
-        self.winner = winner
-        super().__init__(width=self.width, height=self.height)
+class EndGameWindow(tk.Toplevel):
+    def __init__(self, master, width=300, height=100):
+        super().__init__(width=width, height=height)
         self.master = master
-        self.title("Checkmate")
         self.resizable(False, False)
-        self.set_components()
 
-    def set_components(self):
-        self.set_label()
-        self.set_buttons()
-
-    def set_label(self):
-        text = f"{self.winner} wins"
-        label = tk.Label(self, text=text, font="sans-serif 15 bold")
-        label.place(x=90, y=10)
-
-    def set_buttons(self):
+    def set_buttons(self, x):
         new_game_btn = tk.Button(self, text="New Game", command=self.start_new_game)
         main_menu_btn = tk.Button(self, text="Main Menu", command=self.return_to_main_menu)
         close_btn = tk.Button(self, text="Exit", command=self.close_all)
-        new_game_btn.place(x=10, y=50)
-        main_menu_btn.place(x=120, y=50)
-        close_btn.place(x=230, y=50)
+        delta = 110
+        new_game_btn.place(x=x, y=50)
+        main_menu_btn.place(x=x+delta, y=50)
+        close_btn.place(x=x+delta*2, y=50)
 
     def start_new_game(self):
         self.master.master.destroy()
@@ -299,6 +286,23 @@ class CheckmateWindow(tk.Toplevel):
 
     def close_all(self):
         self.master.master.destroy()
+
+
+class CheckmateWindow(EndGameWindow):
+    def __init__(self, master, winner):
+        super().__init__(master)
+        self.winner = winner
+        self.title("Checkmate")
+        self.set_components()
+
+    def set_components(self):
+        self.set_label()
+        self.set_buttons(10)
+
+    def set_label(self):
+        text = f"{self.winner} wins"
+        label = tk.Label(self, text=text, font="sans-serif 15 bold")
+        label.place(x=90, y=10)
 
 
 if __name__ == '__main__':
