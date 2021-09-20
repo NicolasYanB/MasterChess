@@ -59,7 +59,8 @@ class GameGui(tk.Frame):
             if "move" in self.canvas.gettags(obj):
                 self.move_event(event)
                 break
-        self.unselect()
+        else:
+            self.unselect()
 
     def piece_event(self, event):
         if self.stop_game:
