@@ -1,6 +1,6 @@
 import tkinter as tk
 from source import Game, InvalidMoveException
-from source import Queen, Rook, Bishop, Knight
+from source import Queen, Rook, Bishop, Knight, MainMenu
 
 
 class GameGui(tk.Frame):
@@ -112,7 +112,7 @@ class GameGui(tk.Frame):
         end_game_window = 0
         if game_status == 1:
             winner = "white" if self.game.turn == "black" else "white"
-            end_game_window = CheckmateWindow(winner)
+            end_game_window = CheckmateWindow(self, winner)
         if game_status == 2:
             print("stalemate")
         if game_status == 3:
@@ -258,11 +258,12 @@ class PromotionWindow(tk.Toplevel):
 
 
 class CheckmateWindow(tk.Toplevel):
-    def __init__(self, winner):
+    def __init__(self, master, winner):
         self.width = 300
         self.height = 100
         self.winner = winner
         super().__init__(width=self.width, height=self.height)
+        self.master = master
         self.title("Checkmate")
         self.resizable(False, False)
         self.set_components()
@@ -277,12 +278,27 @@ class CheckmateWindow(tk.Toplevel):
         label.place(x=90, y=10)
 
     def set_buttons(self):
-        new_game_btn = tk.Button(self, text="New Game")
-        main_menu_btn = tk.Button(self, text="Main Menu")
-        close_btn = tk.Button(self, text="Exit")
+        new_game_btn = tk.Button(self, text="New Game", command=self.start_new_game)
+        main_menu_btn = tk.Button(self, text="Main Menu", command=self.return_to_main_menu)
+        close_btn = tk.Button(self, text="Exit", command=self.close_all)
         new_game_btn.place(x=10, y=50)
         main_menu_btn.place(x=120, y=50)
         close_btn.place(x=230, y=50)
+
+    def start_new_game(self):
+        self.master.master.destroy()
+        new_root = tk.Tk()
+        new_game_gui = GameGui(new_root)
+        new_game_gui.mainloop()
+
+    def return_to_main_menu(self):
+        self.master.master.destroy()
+        new_root = tk.Tk()
+        main_menu = MainMenu(new_root)
+        main_menu.mainloop()
+
+    def close_all(self):
+        self.master.master.destroy()
 
 
 if __name__ == '__main__':
