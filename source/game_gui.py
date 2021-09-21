@@ -113,14 +113,8 @@ class GameGui(tk.Frame):
         if game_status == 1:
             winner = "white" if self.game.turn == "black" else "white"
             end_game_window = CheckmateWindow(self, winner)
-        if game_status == 2:
-            print("stalemate")
-        if game_status == 3:
-            print("threefold")
-        if game_status == 4:
-            print("fifty")
-        if game_status == 5:
-            print("insufficient")
+        else:
+            end_game_window = DrawWindow(self, game_status)
         end_game_window.mainloop()
 
     def was_promoted(self, piece):
@@ -303,6 +297,37 @@ class CheckmateWindow(EndGameWindow):
         text = f"{self.winner} wins"
         label = tk.Label(self, text=text, font="sans-serif 15 bold")
         label.place(x=90, y=10)
+
+
+class DrawWindow(EndGameWindow):
+    def __init__(self, master, end_game):
+        super().__init__(master, width=350)
+        self.end_game = end_game
+        self.title("Draw")
+        self.set_components()
+
+    def set_components(self):
+        self.set_label()
+        self.set_buttons(40)
+
+    def set_label(self):
+        draw_type = ''
+        x = 0
+        if self.end_game == 2:
+            draw_type = "stalemate"
+            x = 65
+        if self.end_game == 3:
+            draw_type = "threefold repetition"
+            x = 10
+        if self.end_game == 4:
+            draw_type = "fifty move rule"
+            x = 40
+        if self.end_game == 5:
+            draw_type = "insufficient material"
+            x = 10
+        text = f"Draw by {draw_type}"
+        label = tk.Label(self, text=text, font="sans-serif 15 bold")
+        label.place(x=x, y=10)
 
 
 if __name__ == '__main__':
