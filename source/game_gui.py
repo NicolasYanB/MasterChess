@@ -256,6 +256,7 @@ class EndGameWindow(tk.Toplevel):
         super().__init__(width=width, height=height)
         self.master = master
         self.resizable(False, False)
+        self.protocol("WM_DELETE_WINDOW", self.close_all)
 
     def set_buttons(self, x):
         new_game_btn = tk.Button(self, text="New Game", command=self.start_new_game)
