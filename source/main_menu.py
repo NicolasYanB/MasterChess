@@ -24,10 +24,17 @@ class MainMenu(tk.Frame):
         self.canvas.create_image(0, 0, anchor=tk.NW, image=background)
 
     def set_buttons(self):
-        btn_new_game = tk.Button(text="New Game")
+        btn_new_game = tk.Button(text="New Game", command=self.start_new_game)
         btn_load_game = tk.Button(text="Load Game")
         self.canvas.create_window(60, 220, anchor=tk.NW, window=btn_new_game)
         self.canvas.create_window(200, 220, anchor=tk.NW, window=btn_load_game)
+
+    def start_new_game(self):
+        from source import GameGui
+        self.master.destroy()
+        new_root = tk.Tk()
+        game_gui = GameGui(new_root)
+        game_gui.mainloop()
 
 
 def main():

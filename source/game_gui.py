@@ -1,6 +1,6 @@
 import tkinter as tk
 from source import Game, InvalidMoveException
-from source import Queen, Rook, Bishop, Knight, MainMenu
+from source import Queen, Rook, Bishop, Knight
 
 
 class GameGui(tk.Frame):
@@ -274,6 +274,7 @@ class EndGameWindow(tk.Toplevel):
         new_game_gui.mainloop()
 
     def return_to_main_menu(self):
+        from source import MainMenu
         self.master.master.destroy()
         new_root = tk.Tk()
         main_menu = MainMenu(new_root)
