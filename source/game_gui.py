@@ -340,6 +340,22 @@ class SaveGameWindow(tk.Toplevel):
         super().__init__(width=width, height=height)
         self.title("Save Game")
         self.resizable(False, False)
+        self.set_components()
+
+    def set_components(self):
+        save_game_lbl = tk.Label(self, text="Save the Game?", font="sans-serif 13 bold")
+        save_game_lbl.place(x=75, y=20)
+        game_file_entry = tk.Entry(self, width=34)
+        game_file_entry.place(x=10, y=55)
+        self.set_buttons()
+
+    def set_buttons(self):
+        yes_btn = tk.Button(self, text="YES")
+        no_btn = tk.Button(self, text="NO")
+        cancel_btn = tk.Button(self, text="Cancel")
+        yes_btn.place(x=40, y=100)
+        no_btn.place(x=110, y=100)
+        cancel_btn.place(x=180, y=100)
 
 
 if __name__ == '__main__':
