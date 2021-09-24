@@ -12,6 +12,7 @@ class GameGui(tk.Frame):
         master.geometry(f"{self.width}x{self.height}")
         master.resizable(False, False)
         master.title("Master Chess")
+        master.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.pack(expand=True, fill=tk.BOTH)
         self.canvas = tk.Canvas(self, width=self.width, height=self.height)
         self.canvas.pack()
@@ -177,6 +178,14 @@ class GameGui(tk.Frame):
         self.canvas.delete("selected")
         self.canvas.delete("move")
 
+    def on_closing(self):
+        children = self.master.winfo_children()
+        if len(children) > 1:
+            self.master.destroy()
+            return
+        save_game_dialog = SaveGameWindow(self)
+        save_game_dialog.mainloop()
+
 
 class PromotionWindow(tk.Toplevel):
     def __init__(self, master, pawn):
@@ -334,10 +343,11 @@ class DrawWindow(EndGameWindow):
 
 
 class SaveGameWindow(tk.Toplevel):
-    def __init__(self):
+    def __init__(self, master):
         width = 300
         height = 160
         super().__init__(width=width, height=height)
+        master.stop_game = True
         self.title("Save Game")
         self.resizable(False, False)
         self.set_components()
