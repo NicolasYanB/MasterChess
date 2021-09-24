@@ -333,6 +333,15 @@ class DrawWindow(EndGameWindow):
         label.place(x=x, y=10)
 
 
+class SaveGameWindow(tk.Toplevel):
+    def __init__(self):
+        width = 300
+        height = 160
+        super().__init__(width=width, height=height)
+        self.title("Save Game")
+        self.resizable(False, False)
+
+
 if __name__ == '__main__':
     root = tk.Tk()
     game_gui = GameGui(root)
