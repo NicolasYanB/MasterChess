@@ -373,7 +373,7 @@ class SaveGameWindow(tk.Toplevel):
     def set_buttons(self):
         yes_btn = tk.Button(self, text="YES", command=self.yes_btn_event)
         no_btn = tk.Button(self, text="NO", command=self.no_btn_event)
-        cancel_btn = tk.Button(self, text="Cancel")
+        cancel_btn = tk.Button(self, text="Cancel", command=self.destroy)
         yes_btn.place(x=40, y=100)
         no_btn.place(x=110, y=100)
         cancel_btn.place(x=180, y=100)
