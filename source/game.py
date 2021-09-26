@@ -284,12 +284,21 @@ class Game:
     def __get_board_status(self):
         pieces = self.__board.get_all_pieces()
         game_status = []
+        turn_player = self.__turn
+        en_passant = "en passant: "
+        if self.__en_passant_pawn != 0:
+            en_passant_column, en_passant_line = self.__en_passant_pawn.position
+            en_passant += f"{en_passant_column} {en_passant_line}"
+        else:
+            en_passant += "0"
+        game_status.append(turn_player)
+        game_status.append(en_passant)
         for piece in pieces:
             column, line = piece.position
             moves = len(self.__get_valid_moves(piece))
-            line = f"{self.__turn} {piece.color} {piece.type} {column} {line} {moves}"
+            line = f"{piece.color} {piece.type} {column} {line} {moves} {piece.moved}"
             game_status.append(line)
-        return ' '.join(game_status)
+        return str(game_status)
 
     def promote(self, promoted_piece, new_piece):
         self.__board.remove(promoted_piece)
