@@ -1,5 +1,6 @@
 import tkinter as tk
 from PIL import Image, ImageTk
+import os
 
 
 class MainMenu(tk.Frame):
@@ -13,6 +14,7 @@ class MainMenu(tk.Frame):
         self.canvas.pack()
         self.master = master
         self.set_background()
+        self.create_game_directory()
         self.set_buttons()
 
     def set_background(self):
@@ -22,6 +24,12 @@ class MainMenu(tk.Frame):
         background = ImageTk.PhotoImage(resized_img)
         self.canvas.background = background
         self.canvas.create_image(0, 0, anchor=tk.NW, image=background)
+
+    def create_game_directory(self):
+        home = os.path.expanduser('~')
+        path = f"{home}/.MasterChess"
+        if not os.path.isdir(path):
+            os.mkdir(path)
 
     def set_buttons(self):
         btn_new_game = tk.Button(text="New Game", command=self.start_new_game)
