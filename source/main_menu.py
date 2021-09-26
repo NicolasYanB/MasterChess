@@ -10,7 +10,8 @@ class MainMenu(tk.Frame):
         master.geometry(f"{self.width}x{self.height}")
         master.resizable(False, False)
         master.title("Master Chess")
-        self.canvas = tk.Canvas(master, width=self.width, height=self.height)
+        self.pack()
+        self.canvas = tk.Canvas(self, width=self.width, height=self.height)
         self.canvas.pack()
         self.master = master
         self.set_background()
@@ -32,8 +33,8 @@ class MainMenu(tk.Frame):
             os.mkdir(path)
 
     def set_buttons(self):
-        btn_new_game = tk.Button(text="New Game", command=self.start_new_game)
-        btn_load_game = tk.Button(text="Load Game")
+        btn_new_game = tk.Button(self, text="New Game", command=self.start_new_game)
+        btn_load_game = tk.Button(self, text="Load Game")
         self.canvas.create_window(60, 220, anchor=tk.NW, window=btn_new_game)
         self.canvas.create_window(200, 220, anchor=tk.NW, window=btn_load_game)
 
