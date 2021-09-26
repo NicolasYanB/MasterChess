@@ -163,7 +163,7 @@ class Game:
                 king.in_check = True
                 continue
             king.in_check = False
-        game_status = self.__get_board_status()
+        game_status = self.get_board_state()
         self.__history.append(game_status)
         return self.__get_game_status()
 
@@ -281,7 +281,7 @@ class Game:
                 return king
         return 0
 
-    def __get_board_status(self):
+    def get_board_state(self):
         pieces = self.__board.get_all_pieces()
         game_status = []
         turn_player = self.__turn

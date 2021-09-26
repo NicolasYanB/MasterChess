@@ -2,6 +2,7 @@ import tkinter as tk
 from source import Game, InvalidMoveException
 from source import Queen, Rook, Bishop, Knight
 from datetime import datetime
+import os
 
 
 class GameGui(tk.Frame):
@@ -354,6 +355,7 @@ class SaveGameWindow(tk.Toplevel):
         master.stop_game = True
         self.title("Save Game")
         self.resizable(False, False)
+        self.master = master
         self.set_components()
 
     def set_components(self):
@@ -364,17 +366,26 @@ class SaveGameWindow(tk.Toplevel):
 
     def set_entry(self):
         default_filename = datetime.now().strftime(r"%Y-%m-%d %H:%M")
-        game_file_entry = tk.Entry(self, width=34)
-        game_file_entry.insert(0, default_filename)
-        game_file_entry.place(x=10, y=55)
+        self.game_file_entry = tk.Entry(self, width=34)
+        self.game_file_entry.insert(0, default_filename)
+        self.game_file_entry.place(x=10, y=55)
 
     def set_buttons(self):
-        yes_btn = tk.Button(self, text="YES")
+        yes_btn = tk.Button(self, text="YES", command=self.yes_btn_event)
         no_btn = tk.Button(self, text="NO")
         cancel_btn = tk.Button(self, text="Cancel")
         yes_btn.place(x=40, y=100)
         no_btn.place(x=110, y=100)
         cancel_btn.place(x=180, y=100)
+
+    def yes_btn_event(self):
+        game_state = self.master.game.get_board_state()
+        filename = self.game_file_entry.get()
+        home = os.path.expanduser('~')
+        path = f"{home}/.MasterChess/{filename}"
+        with open(path, 'w') as game_file:
+            game_file.write(game_state)
+        self.master.master.destroy()
 
 
 if __name__ == '__main__':
