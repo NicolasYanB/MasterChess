@@ -181,6 +181,9 @@ class GameGui(tk.Frame):
     def on_closing(self):
         children = self.master.winfo_children()
         if len(children) > 1:
+            child = children[1]
+            if child._w == ".!promotionwindow":
+                return
             self.master.destroy()
             return
         save_game_dialog = SaveGameWindow(self)
