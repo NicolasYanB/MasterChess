@@ -372,7 +372,7 @@ class SaveGameWindow(tk.Toplevel):
 
     def set_buttons(self):
         yes_btn = tk.Button(self, text="YES", command=self.yes_btn_event)
-        no_btn = tk.Button(self, text="NO")
+        no_btn = tk.Button(self, text="NO", command=self.no_btn_event)
         cancel_btn = tk.Button(self, text="Cancel")
         yes_btn.place(x=40, y=100)
         no_btn.place(x=110, y=100)
@@ -385,6 +385,9 @@ class SaveGameWindow(tk.Toplevel):
         path = f"{home}/.MasterChess/{filename}"
         with open(path, 'w') as game_file:
             game_file.write(game_state)
+        self.master.master.destroy()
+
+    def no_btn_event(self):
         self.master.master.destroy()
 
 
