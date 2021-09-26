@@ -357,6 +357,7 @@ class SaveGameWindow(tk.Toplevel):
         self.resizable(False, False)
         self.master = master
         self.set_components()
+        self.bind("<Return>", lambda event: self.yes_btn_event())
 
     def set_components(self):
         save_game_lbl = tk.Label(self, text="Save the Game?", font="sans-serif 13 bold")
