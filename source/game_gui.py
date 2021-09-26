@@ -1,6 +1,7 @@
 import tkinter as tk
 from source import Game, InvalidMoveException
 from source import Queen, Rook, Bishop, Knight
+from datetime import datetime
 
 
 class GameGui(tk.Frame):
@@ -358,9 +359,14 @@ class SaveGameWindow(tk.Toplevel):
     def set_components(self):
         save_game_lbl = tk.Label(self, text="Save the Game?", font="sans-serif 13 bold")
         save_game_lbl.place(x=75, y=20)
-        game_file_entry = tk.Entry(self, width=34)
-        game_file_entry.place(x=10, y=55)
+        self.set_entry()
         self.set_buttons()
+
+    def set_entry(self):
+        default_filename = datetime.now().strftime(r"%Y-%m-%d %H:%M")
+        game_file_entry = tk.Entry(self, width=34)
+        game_file_entry.insert(0, default_filename)
+        game_file_entry.place(x=10, y=55)
 
     def set_buttons(self):
         yes_btn = tk.Button(self, text="YES")
