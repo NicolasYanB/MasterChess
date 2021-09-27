@@ -358,6 +358,7 @@ class SaveGameWindow(tk.Toplevel):
         self.master = master
         self.set_components()
         self.bind("<Return>", lambda event: self.yes_btn_event())
+        self.bind("<Escape>", lambda event: self.destroy())
 
     def set_components(self):
         save_game_lbl = tk.Label(self, text="Save the Game?", font="sans-serif 13 bold")
