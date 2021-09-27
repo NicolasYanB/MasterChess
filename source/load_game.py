@@ -1,4 +1,5 @@
 import tkinter as tk
+import os
 
 
 class LoadGameWindow(tk.Frame):
@@ -25,6 +26,15 @@ class LoadGameWindow(tk.Frame):
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         listbox.config(yscrollcommand=scrollbar.set)
         scrollbar.config(command=listbox.yview)
+        self.add_listbox_elements(listbox)
+
+    def add_listbox_elements(self, listbox):
+        home = os.path.expanduser('~')
+        game_dir = f"{home}/.MasterChess"
+        game_files = os.listdir(game_dir)
+        for i in range(len(game_files)):
+            game_file = game_files[i]
+            listbox.insert(i, game_file)
 
 
 if __name__ == '__main__':
