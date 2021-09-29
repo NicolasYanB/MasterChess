@@ -61,7 +61,7 @@ class LoadGameWindow(tk.Frame):
         selected_index = listbox.curselection()[0]
         file = listbox.get(selected_index)
         pieces = self.get_pieces(file)
-        print(pieces)
+        self.draw_pieces(miniboard, pieces)
 
     def get_pieces(self, file):
         pieces = []
@@ -77,6 +77,19 @@ class LoadGameWindow(tk.Frame):
             column, line = int(p[2]), int(p[3])
             pieces.append([color, type, column, line])
         return pieces
+
+    def draw_pieces(self, miniboard, pieces):
+        square_size = int(miniboard.cget("width")) // 8
+        self.images = []
+        for piece in pieces:
+            color = piece[0]
+            type = piece[1]
+            column, line = piece[2:]
+            image_path = f"images/mini-pieces/{color}/{type}.png"
+            x, y = column * square_size, line * square_size
+            image = tk.PhotoImage(file=image_path)
+            miniboard.create_image(x, y, image=image, anchor=tk.NW)
+            self.images.append(image)
 
 
 if __name__ == '__main__':
