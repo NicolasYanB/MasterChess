@@ -41,33 +41,55 @@ class LoadGameWindow(tk.Frame):
         self.set_miniboard(event.widget)
 
     def set_miniboard(self, listbox):
-        width = height = 104
-        miniboard = tk.Canvas(self, width=width, height=height+1)
-        miniboard.place(x=285, y=250)
-
-        square_size = width//8
-        light_square = "#eeeed2"
-        dark_square = "#769656"
-        colors = [light_square, dark_square]
-        color = 0
-        for y in range(0, height, square_size):
-            for x in range(0, width, square_size):
-                x0, y0, x1, y1 = x, y, x + square_size, y + square_size
-                coords = x0, y0, x1, y1
-                miniboard.create_rectangle(coords, fill=colors[color])
-                color = abs(color - 1)
-            colors.reverse()
-
         selected_index = listbox.curselection()[0]
         file = listbox.get(selected_index)
-        pieces = self.get_pieces(file)
-        self.draw_pieces(miniboard, pieces)
-
-    def get_pieces(self, file):
-        pieces = []
         path = f"{self.game_dir}/{file}"
+        preview = BoardPreview(self, path)
+        preview.show_preview(285, 250)
+
+
+class BoardPreview(tk.Canvas):
+    def __init__(self, master, file):
+        self.width = self.height = 104
+        super().__init__(master, width=self.width, height=self.height)
+        self.square_size = self.width // 8
+        light_square = "#eeeed2"
+        dark_square = "#769656"
+        self.colors = [light_square, dark_square]
+        self.images = []
+        self.file = file
+
+    def show_preview(self, x, y):
+        self.draw_board()
+        self.draw_pieces()
+        self.place(x=x, y=y)
+
+    def draw_board(self):
+        color = 0
+        for y in range(0, self.height, self.square_size):
+            for x in range(0, self.width, self.square_size):
+                x0, y0, x1, y1 = x, y, x + self.square_size, y + self.square_size
+                coords = x0, y0, x1, y1
+                self.create_rectangle(coords, fill=self.colors[color])
+                color = abs(color - 1)
+            self.colors.reverse()
+
+    def draw_pieces(self):
+        pieces = self.get_pieces()
+        for piece in pieces:
+            color = piece[0]
+            type = piece[1]
+            column, line = piece[2:]
+            image_path = f"images/mini-pieces/{color}/{type}.png"
+            x, y = column * self.square_size, line * self.square_size
+            image = tk.PhotoImage(file=image_path)
+            self.create_image(x, y, image=image, anchor=tk.NW)
+            self.images.append(image)
+
+    def get_pieces(self):
+        pieces = []
         board_state = 0
-        with open(path, 'r') as game_file:
+        with open(self.file, 'r') as game_file:
             content = game_file.read()
             board_state = eval(content)[2:]
         for piece in board_state:
@@ -77,19 +99,6 @@ class LoadGameWindow(tk.Frame):
             column, line = int(p[2]), int(p[3])
             pieces.append([color, type, column, line])
         return pieces
-
-    def draw_pieces(self, miniboard, pieces):
-        square_size = int(miniboard.cget("width")) // 8
-        self.images = []
-        for piece in pieces:
-            color = piece[0]
-            type = piece[1]
-            column, line = piece[2:]
-            image_path = f"images/mini-pieces/{color}/{type}.png"
-            x, y = column * square_size, line * square_size
-            image = tk.PhotoImage(file=image_path)
-            miniboard.create_image(x, y, image=image, anchor=tk.NW)
-            self.images.append(image)
 
 
 if __name__ == '__main__':
