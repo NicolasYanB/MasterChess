@@ -17,23 +17,28 @@ class LoadGameWindow(tk.Frame):
 
     def set_components(self):
         self.set_listbox()
+        self.set_back_button()
 
     def set_listbox(self):
         listbox_frame = ListboxFrame(self)
-        listbox_frame.pack(pady=5, padx=5, side=tk.LEFT)
+        listbox_frame.pack(pady=5, padx=5, side=tk.LEFT, anchor=tk.S)
         listbox_frame.add_elements(os.listdir(self.game_dir))
-        listbox_frame.set_on_select_event(self.on_select)
+        listbox_frame.set_on_select_event(self.set_miniboard)
 
-    def on_select(self, event):
-        self.set_miniboard(event.widget.master)
-
-    def set_miniboard(self, listbox):
+    def set_miniboard(self, event):
+        listbox = event.widget.master
         file = listbox.get_selected_element()
         if file is None:
             return
         path = f"{self.game_dir}/{file}"
         preview = BoardPreview(self, path)
         preview.show_preview(285, 250)
+
+    def set_back_button(self):
+        image_path = "images/back.png"
+        self.image = tk.PhotoImage(file=image_path)
+        back_btn = tk.Button(self, image=self.image)
+        back_btn.place(x=5, y=0)
 
 
 class BoardPreview(tk.Canvas):
@@ -91,7 +96,7 @@ class BoardPreview(tk.Canvas):
 
 class ListboxFrame(tk.Frame):
     def __init__(self, master):
-        super().__init__(master, width=240, height=590)
+        super().__init__(master, width=240, height=570)
         self.pack_propagate(False)
         self.listbox = tk.Listbox(self, width=28)
         self.listbox.pack(side=tk.LEFT, anchor=tk.NW, fill=tk.BOTH)
