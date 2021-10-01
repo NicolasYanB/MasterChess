@@ -29,6 +29,8 @@ class LoadGameWindow(tk.Frame):
 
     def set_miniboard(self, listbox):
         file = listbox.get_selected_element()
+        if file is None:
+            return
         path = f"{self.game_dir}/{file}"
         preview = BoardPreview(self, path)
         preview.show_preview(285, 250)
