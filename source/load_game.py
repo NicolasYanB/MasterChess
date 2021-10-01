@@ -19,30 +19,16 @@ class LoadGameWindow(tk.Frame):
         self.set_listbox()
 
     def set_listbox(self):
-        listbox_frame = tk.Frame(self, width=240, height=590)
-        listbox_frame.pack_propagate(False)
+        listbox_frame = ListboxFrame(self)
         listbox_frame.pack(pady=5, padx=5, side=tk.LEFT)
-        listbox = tk.Listbox(listbox_frame, width=28)
-        listbox.pack(side=tk.LEFT, anchor=tk.NW, fill=tk.BOTH)
-        scrollbar = tk.Scrollbar(listbox_frame)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        listbox.config(yscrollcommand=scrollbar.set)
-        scrollbar.config(command=listbox.yview)
-        self.add_listbox_elements(listbox)
-        listbox.bind("<<ListboxSelect>>", self.on_select)
-
-    def add_listbox_elements(self, listbox):
-        game_files = os.listdir(self.game_dir)
-        for i in range(len(game_files)):
-            game_file = game_files[i]
-            listbox.insert(i, game_file)
+        listbox_frame.add_elements(os.listdir(self.game_dir))
+        listbox_frame.set_on_select_event(self.on_select)
 
     def on_select(self, event):
-        self.set_miniboard(event.widget)
+        self.set_miniboard(event.widget.master)
 
     def set_miniboard(self, listbox):
-        selected_index = listbox.curselection()[0]
-        file = listbox.get(selected_index)
+        file = listbox.get_selected_element()
         path = f"{self.game_dir}/{file}"
         preview = BoardPreview(self, path)
         preview.show_preview(285, 250)
@@ -99,6 +85,34 @@ class BoardPreview(tk.Canvas):
             column, line = int(p[2]), int(p[3])
             pieces.append([color, type, column, line])
         return pieces
+
+
+class ListboxFrame(tk.Frame):
+    def __init__(self, master):
+        super().__init__(master, width=240, height=590)
+        self.pack_propagate(False)
+        self.listbox = tk.Listbox(self, width=28)
+        self.listbox.pack(side=tk.LEFT, anchor=tk.NW, fill=tk.BOTH)
+        self.scrollbar = tk.Scrollbar(self)
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.listbox.config(yscrollcommand=self.scrollbar.set)
+        self.scrollbar.config(command=self.listbox.yview)
+
+    def add_elements(self, elm_list):
+        for i in range(len(elm_list)):
+            elm = elm_list[i]
+            self.listbox.insert(i, elm)
+
+    def get_selected_element(self):
+        try:
+            selected_index = self.listbox.curselection()[0]
+        except IndexError:
+            return
+        element = self.listbox.get(selected_index)
+        return element
+
+    def set_on_select_event(self, function):
+        self.listbox.bind("<<ListboxSelect>>", function)
 
 
 if __name__ == '__main__':
