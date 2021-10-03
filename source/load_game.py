@@ -1,5 +1,6 @@
 import tkinter as tk
 import os
+from source import MainMenu
 
 
 class LoadGameWindow(tk.Frame):
@@ -36,9 +37,15 @@ class LoadGameWindow(tk.Frame):
 
     def set_back_button(self):
         image_path = "images/back.png"
-        self.image = tk.PhotoImage(file=image_path)
-        back_btn = tk.Button(self, image=self.image)
+        self.btn_image = tk.PhotoImage(file=image_path)
+        back_btn = tk.Button(self, image=self.btn_image, command=self.back_to_main_menu)
         back_btn.place(x=5, y=0)
+
+    def back_to_main_menu(self):
+        self.master.destroy()
+        new_root = tk.Tk()
+        main_menu = MainMenu(new_root)
+        main_menu.mainloop()
 
 
 class BoardPreview(tk.Canvas):
