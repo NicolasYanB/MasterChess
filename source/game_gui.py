@@ -381,7 +381,7 @@ class SaveGameWindow(tk.Toplevel):
         cancel_btn.place(x=180, y=100)
 
     def yes_btn_event(self):
-        game_state = self.master.game.get_board_state()
+        game_state = self.master.game.get_game_data()
         filename = self.game_file_entry.get()
         home = os.path.expanduser('~')
         path = f"{home}/.MasterChess/{filename}"

@@ -163,7 +163,7 @@ class Game:
                 king.in_check = True
                 continue
             king.in_check = False
-        game_status = self.get_board_state()
+        game_status = self.__get_board_state()
         self.__history.append(game_status)
         return self.__get_game_status()
 
@@ -281,9 +281,8 @@ class Game:
                 return king
         return 0
 
-    def get_board_state(self):
-        pieces = self.__board.get_all_pieces()
-        game_status = []
+    def get_game_data(self):
+        game = self.__get_board_state()
         turn_player = self.__turn
         en_passant = "en passant: "
         if self.__en_passant_pawn != 0:
@@ -291,14 +290,23 @@ class Game:
             en_passant += f"{en_passant_column} {en_passant_line}"
         else:
             en_passant += "0"
-        game_status.append(turn_player)
-        game_status.append(en_passant)
+        captured_white = [piece.type for piece in self.__captured_pieces if piece.color == "white"]
+        captured_black = [piece.type for piece in self.__captured_pieces if piece.color == "black"]
+        game.append(turn_player)
+        game.append(en_passant)
+        game.append(captured_white)
+        game.append(captured_black)
+        return str(game)
+
+    def __get_board_state(self):
+        pieces = self.__board.get_all_pieces()
+        game_status = []
         for piece in pieces:
             column, line = piece.position
             moves = len(self.__get_valid_moves(piece))
             line = f"{piece.color} {piece.type} {column} {line} {moves} {piece.moved}"
             game_status.append(line)
-        return str(game_status)
+        return game_status
 
     def promote(self, promoted_piece, new_piece):
         self.__board.remove(promoted_piece)

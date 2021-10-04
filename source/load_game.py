@@ -91,7 +91,7 @@ class BoardPreview(tk.Canvas):
         board_state = 0
         with open(self.file, 'r') as game_file:
             content = game_file.read()
-            board_state = eval(content)[2:]
+            board_state = eval(content)[:-4]
         for piece in board_state:
             p = piece.split()
             color = p[0]
