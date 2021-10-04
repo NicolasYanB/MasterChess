@@ -24,10 +24,13 @@ class LoadGameWindow(tk.Frame):
         listbox_frame = ListboxFrame(self)
         listbox_frame.pack(pady=5, padx=5, side=tk.LEFT, anchor=tk.S)
         listbox_frame.add_elements(os.listdir(self.game_dir))
-        listbox_frame.set_on_select_event(self.set_miniboard)
+        listbox_frame.set_on_select_event(self.listbox_on_select)
 
-    def set_miniboard(self, event):
-        listbox = event.widget.master
+    def listbox_on_select(self, event):
+        self.show_board_preview(event.widget.master)
+        self.show_captured_pieces()
+
+    def show_board_preview(self, listbox):
         file = listbox.get_selected_element()
         if file is None:
             return
@@ -46,6 +49,12 @@ class LoadGameWindow(tk.Frame):
         new_root = tk.Tk()
         main_menu = MainMenu(new_root)
         main_menu.mainloop()
+
+    def show_captured_pieces(self):
+        white_pieces = CapturedPieces(self)
+        black_pieces = CapturedPieces(self)
+        white_pieces.place(x=285, y=220)
+        black_pieces.place(x=285, y=360)
 
 
 class BoardPreview(tk.Canvas):
@@ -127,6 +136,11 @@ class ListboxFrame(tk.Frame):
 
     def set_on_select_event(self, function):
         self.listbox.bind("<<ListboxSelect>>", function)
+
+
+class CapturedPieces(tk.Canvas):
+    def __init__(self, master):
+        super().__init__(master, width=104, height=26, bg="red")
 
 
 if __name__ == '__main__':
