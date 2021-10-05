@@ -27,8 +27,9 @@ class LoadGameWindow(tk.Frame):
         listbox_frame.set_on_select_event(self.listbox_on_select)
 
     def listbox_on_select(self, event):
-        self.show_board_preview(event.widget.master)
-        self.show_captured_pieces()
+        listbox = event.widget.master
+        self.show_board_preview(listbox)
+        self.show_captured_pieces(listbox)
 
     def show_board_preview(self, listbox):
         file = listbox.get_selected_element()
@@ -50,9 +51,13 @@ class LoadGameWindow(tk.Frame):
         main_menu = MainMenu(new_root)
         main_menu.mainloop()
 
-    def show_captured_pieces(self):
-        white_pieces = CapturedPieces(self)
-        black_pieces = CapturedPieces(self)
+    def show_captured_pieces(self, listbox):
+        file = listbox.get_selected_element()
+        if file is None:
+            return
+        path = f"{self.game_dir}/{file}"
+        white_pieces = CapturedPieces(self, "white", path)
+        black_pieces = CapturedPieces(self, "black", path)
         white_pieces.place(x=285, y=220)
         black_pieces.place(x=285, y=360)
 
@@ -139,8 +144,22 @@ class ListboxFrame(tk.Frame):
 
 
 class CapturedPieces(tk.Canvas):
-    def __init__(self, master):
+    def __init__(self, master, piece_color, file):
         super().__init__(master, width=104, height=26, bg="red")
+        self.color = piece_color
+        self.index = -1 if piece_color == "black" else -2
+        self.path = file
+        self.show_captured_pieces()
+
+    def show_captured_pieces(self):
+        print(self.get_pieces())
+
+    def get_pieces(self):
+        captured_pieces = 0
+        with open(self.path, 'r') as game_file:
+            content = game_file.read()
+            captured_pieces = eval(content)[self.index]
+        return captured_pieces
 
 
 if __name__ == '__main__':
