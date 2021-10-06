@@ -152,7 +152,7 @@ class CapturedPieces(tk.Canvas):
         self.show_captured_pieces()
 
     def show_captured_pieces(self):
-        print(self.get_pieces())
+        print(self.sort_pieces(self.get_pieces()))
 
     def get_pieces(self):
         captured_pieces = 0
@@ -160,6 +160,22 @@ class CapturedPieces(tk.Canvas):
             content = game_file.read()
             captured_pieces = eval(content)[self.index]
         return captured_pieces
+
+    def sort_pieces(self, pieces):
+        order = ["pawn", "knight", "bishop", "rook", "queen"]
+        initial_index = 0
+        while initial_index < len(pieces) - 1:
+            lower_piece_order = order.index(pieces[initial_index])
+            lower_piece_index = initial_index
+            for i in range(initial_index+1, len(pieces)):
+                piece_order = order.index(pieces[i])
+                if piece_order < lower_piece_order:
+                    lower_piece_order = piece_order
+                    lower_piece_index = i
+            piece = pieces.pop(lower_piece_index)
+            pieces.insert(initial_index, piece)
+            initial_index += 1
+        return pieces
 
 
 if __name__ == '__main__':
