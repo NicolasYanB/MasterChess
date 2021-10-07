@@ -30,6 +30,7 @@ class LoadGameWindow(tk.Frame):
         listbox = event.widget.master
         self.show_board_preview(listbox)
         self.show_captured_pieces(listbox)
+        self.set_buttons()
 
     def show_board_preview(self, listbox):
         file = listbox.get_selected_element()
@@ -60,6 +61,12 @@ class LoadGameWindow(tk.Frame):
         black_pieces = CapturedPieces(self, "black", path)
         white_pieces.place(x=285, y=140)
         black_pieces.place(x=285, y=290)
+
+    def set_buttons(self):
+        load_btn = tk.Button(self, text="Load")
+        delete_btn = tk.Button(self, text="Delete")
+        load_btn.place(x=260, y=340)
+        delete_btn.place(x=350, y=340)
 
 
 class BoardPreview(tk.Canvas):
