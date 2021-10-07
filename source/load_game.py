@@ -145,14 +145,15 @@ class ListboxFrame(tk.Frame):
 
 class CapturedPieces(tk.Canvas):
     def __init__(self, master, piece_color, file):
-        super().__init__(master, width=104, height=26, bg="red")
+        super().__init__(master, width=104, height=26)
         self.color = piece_color
         self.index = -1 if piece_color == "black" else -2
         self.path = file
         self.show_captured_pieces()
 
     def show_captured_pieces(self):
-        print(self.sort_pieces(self.get_pieces()))
+        pieces = self.sort_pieces(self.get_pieces())
+        self.draw_pieces(pieces)
 
     def get_pieces(self):
         captured_pieces = 0
@@ -176,6 +177,21 @@ class CapturedPieces(tk.Canvas):
             pieces.insert(initial_index, piece)
             initial_index += 1
         return pieces
+
+    def draw_pieces(self, pieces):
+        self.images = []
+        column = line = 0
+        for piece in pieces:
+            img_path = f"images/mini-pieces/{self.color}/{piece}.png"
+            image = tk.PhotoImage(file=img_path)
+            x, y = column * 13, line * 13
+            self.create_image(x, y, image=image, anchor=tk.NW)
+            self.images.append(image)
+            if column == 7:
+                column = 0
+                line += 1
+            else:
+                column += 1
 
 
 if __name__ == '__main__':
