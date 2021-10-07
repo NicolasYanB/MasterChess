@@ -6,7 +6,7 @@ from source import MainMenu
 class LoadGameWindow(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
-        width, height = 450, 600
+        width, height = 450, 450
         master.geometry(f"{width}x{height}")
         master.resizable(False, False)
         master.title("Load Game")
@@ -22,7 +22,7 @@ class LoadGameWindow(tk.Frame):
 
     def set_listbox(self):
         listbox_frame = ListboxFrame(self)
-        listbox_frame.pack(pady=5, padx=5, side=tk.LEFT, anchor=tk.S)
+        listbox_frame.pack(pady=20, padx=5, side=tk.LEFT, anchor=tk.S)
         listbox_frame.add_elements(os.listdir(self.game_dir))
         listbox_frame.set_on_select_event(self.listbox_on_select)
 
@@ -37,7 +37,7 @@ class LoadGameWindow(tk.Frame):
             return
         path = f"{self.game_dir}/{file}"
         preview = BoardPreview(self, path)
-        preview.show_preview(285, 250)
+        preview.show_preview(285, 175)
 
     def set_back_button(self):
         image_path = "images/back.png"
@@ -58,8 +58,8 @@ class LoadGameWindow(tk.Frame):
         path = f"{self.game_dir}/{file}"
         white_pieces = CapturedPieces(self, "white", path)
         black_pieces = CapturedPieces(self, "black", path)
-        white_pieces.place(x=285, y=220)
-        black_pieces.place(x=285, y=360)
+        white_pieces.place(x=285, y=140)
+        black_pieces.place(x=285, y=290)
 
 
 class BoardPreview(tk.Canvas):
