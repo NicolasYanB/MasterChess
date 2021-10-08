@@ -27,11 +27,11 @@ class LoadGameWindow(tk.Frame):
         self.listbox_frame.set_on_select_event(self.listbox_on_select)
 
     def listbox_on_select(self, event):
+        self.remove_preview()
         listbox = event.widget.master
         self.show_board_preview(listbox)
         self.show_captured_pieces(listbox)
         self.set_buttons()
-        return  # Just to create a breakpoint
 
     def show_board_preview(self, listbox):
         file = listbox.get_selected_element()
@@ -78,6 +78,14 @@ class LoadGameWindow(tk.Frame):
         os.remove(path)
         selected_index = listbox.curselection()[0]
         listbox.delete(selected_index)
+        self.remove_preview()
+
+    def remove_preview(self):
+        children = self.winfo_children()
+        for child in children:
+            if child._name == "!listboxframe" or child._name == "!button":
+                continue
+            child.destroy()
 
 
 class BoardPreview(tk.Canvas):
