@@ -13,6 +13,7 @@ class LoadGameWindow(tk.Frame):
         self.master = master
         home = os.path.expanduser('~')
         self.game_dir = f"{home}/.MasterChess"
+        self.listbox_frame = ListboxFrame(self)
         self.pack(expand=True, fill=tk.BOTH)
         self.set_components()
 
@@ -21,16 +22,16 @@ class LoadGameWindow(tk.Frame):
         self.set_back_button()
 
     def set_listbox(self):
-        listbox_frame = ListboxFrame(self)
-        listbox_frame.pack(pady=20, padx=5, side=tk.LEFT, anchor=tk.S)
-        listbox_frame.add_elements(os.listdir(self.game_dir))
-        listbox_frame.set_on_select_event(self.listbox_on_select)
+        self.listbox_frame.pack(pady=20, padx=5, side=tk.LEFT, anchor=tk.S)
+        self.listbox_frame.add_elements(os.listdir(self.game_dir))
+        self.listbox_frame.set_on_select_event(self.listbox_on_select)
 
     def listbox_on_select(self, event):
         listbox = event.widget.master
         self.show_board_preview(listbox)
         self.show_captured_pieces(listbox)
         self.set_buttons()
+        return  # Just to create a breakpoint
 
     def show_board_preview(self, listbox):
         file = listbox.get_selected_element()
@@ -64,9 +65,19 @@ class LoadGameWindow(tk.Frame):
 
     def set_buttons(self):
         load_btn = tk.Button(self, text="Load")
-        delete_btn = tk.Button(self, text="Delete")
+        delete_btn = tk.Button(self, text="Delete", command=self.delete_file)
         load_btn.place(x=260, y=340)
         delete_btn.place(x=350, y=340)
+
+    def delete_file(self):
+        listbox = self.listbox_frame.listbox
+        selected_element = self.listbox_frame.get_selected_element()
+        if selected_element is None:
+            return
+        path = f"{self.game_dir}/{selected_element}"
+        os.remove(path)
+        selected_index = listbox.curselection()[0]
+        listbox.delete(selected_index)
 
 
 class BoardPreview(tk.Canvas):
