@@ -31,6 +31,7 @@ class LoadGameWindow(tk.Frame):
         listbox = event.widget.master
         self.show_board_preview(listbox)
         self.show_captured_pieces(listbox)
+        self.set_turn_label(listbox)
         self.set_buttons()
 
     def show_board_preview(self, listbox):
@@ -68,6 +69,19 @@ class LoadGameWindow(tk.Frame):
         delete_btn = tk.Button(self, text="Delete", command=self.delete_file)
         load_btn.place(x=260, y=340)
         delete_btn.place(x=350, y=340)
+
+    def set_turn_label(self, listbox):
+        file = listbox.get_selected_element()
+        if file is None:
+            return
+        path = f"{self.game_dir}/{file}"
+        turn = 0
+        with open(path, 'r') as game_file:
+            content = game_file.read()
+            turn = eval(content)[-4]
+        text = f"Turn player: {turn}"
+        lbl_turn = tk.Label(self, text=text)
+        lbl_turn.place(x=270, y=100)
 
     def delete_file(self):
         listbox = self.listbox_frame.listbox
