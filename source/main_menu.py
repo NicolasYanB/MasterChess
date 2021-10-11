@@ -29,7 +29,7 @@ class MainMenu(tk.Frame):
     def create_game_directory(self):
         home = os.path.expanduser('~')
         path = f"{home}/.MasterChess"
-        if not os.path.isdir(path):
+        if not os.path.exists(path):
             os.mkdir(path)
 
     def set_buttons(self):

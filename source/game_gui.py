@@ -361,8 +361,15 @@ class SaveGameWindow(tk.Toplevel):
         self.resizable(False, False)
         self.master = master
         self.set_components()
+        self.create_game_directory()
         self.bind("<Return>", lambda event: self.yes_btn_event())
         self.bind("<Escape>", lambda event: self.destroy())
+
+    def create_game_directory(self):
+        home = os.path.expanduser('~')
+        path = f"{home}/.MasterChess"
+        if not os.path.exists(path):
+            os.mkdir(path)
 
     def set_components(self):
         save_game_lbl = tk.Label(self, text="Save the Game?", font="sans-serif 13 bold")
