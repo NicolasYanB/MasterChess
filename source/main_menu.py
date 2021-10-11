@@ -34,7 +34,7 @@ class MainMenu(tk.Frame):
 
     def set_buttons(self):
         btn_new_game = tk.Button(self, text="New Game", command=self.start_new_game)
-        btn_load_game = tk.Button(self, text="Load Game")
+        btn_load_game = tk.Button(self, text="Load Game", command=self.open_load_game_window)
         self.canvas.create_window(60, 220, anchor=tk.NW, window=btn_new_game)
         self.canvas.create_window(200, 220, anchor=tk.NW, window=btn_load_game)
 
@@ -44,6 +44,13 @@ class MainMenu(tk.Frame):
         new_root = tk.Tk()
         game_gui = GameGui(new_root)
         game_gui.mainloop()
+
+    def open_load_game_window(self):
+        from source import LoadGameWindow
+        self.master.destroy()
+        new_root = tk.Tk()
+        load_game_window = LoadGameWindow(new_root)
+        load_game_window.mainloop()
 
 
 def main():
