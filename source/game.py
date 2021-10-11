@@ -69,7 +69,7 @@ class Game:
         self.__captured_pieces = captured_pieces
         kings = self.__board.get_all("king")
         for king in kings:
-            if self.__is_in_check(king, self.__board):
+            if self.__is_in_check(king):
                 king.in_check = True
                 break
 
@@ -159,7 +159,7 @@ class Game:
         board_copy.remove(*move)
         board_copy.move(piece_copy, move)
         ally_king = board_copy.get_all("king", piece_copy.color)[0]
-        return self.__is_in_check(ally_king, board_copy)
+        return self.__is_in_check(ally_king, board=board_copy)
 
     def move_selected_piece(self, destination):
         self.__fifty_moves_counter += 0.5
@@ -188,7 +188,7 @@ class Game:
     def post_movement_actions(self):
         kings = self.__board.get_all("king")
         for king in kings:
-            if self.__is_in_check(king, self.__board):
+            if self.__is_in_check(king):
                 king.in_check = True
                 continue
             king.in_check = False
@@ -215,7 +215,7 @@ class Game:
         for piece in pieces:
             if len(self.__get_valid_moves(piece)) > 0:
                 return False
-        return self.__is_in_check(king, self.__board)
+        return self.__is_in_check(king)
 
     def __is_stalemate(self):
         pieces = self.__board.get_all_of(self.__turn)
@@ -295,7 +295,9 @@ class Game:
         move_line = move[1]
         return abs(piece_line - move_line) == 2
 
-    def __is_in_check(self, king, board):
+    def __is_in_check(self, king, board=None):
+        if board is None:
+            board = self.__board
         enemy_color = "black" if king.color == "white" else "white"
         enemy_pieces = board.get_all_of(enemy_color)
         for piece in enemy_pieces:
