@@ -54,6 +54,7 @@ class GameGui(tk.Frame):
             self.canvas.create_image(x, y, image=image, anchor=tk.NW, tags="piece")
             self.images.append(image)
         self.canvas.tag_bind("piece", "<Button-1>", self.piece_event)
+        self.highlight_king_in_check()
 
     def square_event(self, event):
         if self.stop_game:
@@ -109,8 +110,7 @@ class GameGui(tk.Frame):
 
     def finish_move(self):
         game_status = self.game.post_movement_actions()
-        king_in_check = self.game.get_king_in_check()
-        self.highlight_king_in_check(king_in_check)
+        self.highlight_king_in_check()
         if game_status != 0:
             self.end_game(game_status)
 
@@ -168,7 +168,8 @@ class GameGui(tk.Frame):
             self.canvas.create_oval(x0, y0, x1, y1, fill="#f5cb5c", outline="#f5cb5c", tags="move")
         self.canvas.tag_bind("move", "<Button-1>", self.move_event)
 
-    def highlight_king_in_check(self, king):
+    def highlight_king_in_check(self):
+        king = self.game.get_king_in_check()
         if king == 0:
             return
         column, line = king.position

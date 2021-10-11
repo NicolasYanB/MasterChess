@@ -67,6 +67,11 @@ class Game:
             en_passant_pawn = self.__board.get(column, line)
             self.__en_passant_pawn = en_passant_pawn
         self.__captured_pieces = captured_pieces
+        kings = self.__board.get_all("king")
+        for king in kings:
+            if self.__is_in_check(king, self.__board):
+                king.in_check = True
+                break
 
     def select_piece(self, column, line):
         if self.__board.is_empty(column, line):
