@@ -1,6 +1,6 @@
 import tkinter as tk
 import os
-from source import MainMenu
+from source import MainMenu, GameGui
 
 
 class LoadGameWindow(tk.Frame):
@@ -65,7 +65,7 @@ class LoadGameWindow(tk.Frame):
         black_pieces.place(x=285, y=290)
 
     def set_buttons(self):
-        load_btn = tk.Button(self, text="Load")
+        load_btn = tk.Button(self, text="Load", command=self.load_game)
         delete_btn = tk.Button(self, text="Delete", command=self.delete_file)
         load_btn.place(x=260, y=340)
         delete_btn.place(x=350, y=340)
@@ -78,7 +78,7 @@ class LoadGameWindow(tk.Frame):
         turn = 0
         with open(path, 'r') as game_file:
             content = game_file.read()
-            turn = eval(content)[-4]
+            turn = eval(content)[-3]
         text = f"Turn player: {turn}"
         lbl_turn = tk.Label(self, text=text)
         lbl_turn.place(x=270, y=100)
@@ -93,6 +93,20 @@ class LoadGameWindow(tk.Frame):
         selected_index = listbox.curselection()[0]
         listbox.delete(selected_index)
         self.remove_preview()
+
+    def load_game(self):
+        selected_element = self.listbox_frame.get_selected_element()
+        if selected_element is None:
+            return
+        path = f"{self.game_dir}/{selected_element}"
+        game = 0
+        with open(path, 'r') as game_file:
+            content = game_file.read()
+            game = eval(content)
+        self.master.destroy()
+        new_root = tk.Tk()
+        game_gui = GameGui(new_root, saved_game=game)
+        game_gui.mainloop()
 
     def remove_preview(self):
         children = self.winfo_children()
@@ -187,7 +201,6 @@ class CapturedPieces(tk.Canvas):
     def __init__(self, master, piece_color, file):
         super().__init__(master, width=104, height=26)
         self.color = piece_color
-        self.index = -1 if piece_color == "black" else -2
         self.path = file
         self.show_captured_pieces()
 
@@ -199,8 +212,8 @@ class CapturedPieces(tk.Canvas):
         captured_pieces = 0
         with open(self.path, 'r') as game_file:
             content = game_file.read()
-            captured_pieces = eval(content)[self.index]
-        return captured_pieces
+            captured_pieces = eval(content)[-1]
+        return captured_pieces[self.color]
 
     def sort_pieces(self, pieces):
         order = ["pawn", "knight", "bishop", "rook", "queen"]

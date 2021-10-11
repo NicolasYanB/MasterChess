@@ -14,7 +14,7 @@ class Game:
     def __init__(self):
         self.__board = Board()
         self.__selected_piece = None
-        self.__captured_pieces = []
+        self.__captured_pieces = {"white": [], "black": []}
         self.__turn = "white"
         self.__en_passant_pawn = 0
         self.__history = []
@@ -36,13 +36,37 @@ class Game:
     def turn(self):
         return self.__turn
 
-    def load_board(self):
+    def load_new_game_board(self):
         piece_types = [Pawn, Knight, Rook, Bishop, Queen, King]
         for color in ("white", "black"):
             for type in piece_types:
                 for position in type.initial_positions[color]:
                     piece = type(color, position)
                     self.__board.add(piece)
+
+    def load_saved_game_board(self, game_state):
+        piece_classes = {"pawn": Pawn, "knight": Knight, "rook": Rook,
+                         "bishop": Bishop, "queen": Queen, "king": King}
+        pieces = game_state[:-3]
+        turn = game_state[-3]
+        en_passant = game_state[-2]
+        captured_pieces = game_state[-1]
+        for piece_data in pieces:
+            piece_info = piece_data.split()
+            color = piece_info[0]
+            type = piece_info[1]
+            position = int(piece_info[2]), int(piece_info[3])
+            moved = eval(piece_info[-1])
+            piece_class = piece_classes[type]
+            piece = piece_class(color, position)
+            piece.moved = moved
+            self.__board.add(piece)
+        self.__turn = turn
+        if en_passant != 0:
+            column, line = en_passant
+            en_passant_pawn = self.__board.get(column, line)
+            self.__en_passant_pawn = en_passant_pawn
+        self.__captured_pieces = captured_pieces
 
     def select_piece(self, column, line):
         if self.__board.is_empty(column, line):
@@ -230,13 +254,13 @@ class Game:
 
     def __capture_movement(self, move_position):
         captured_piece = self.__board.get(*move_position)
-        self.__captured_pieces.append(captured_piece)
+        self.__captured_pieces[captured_piece.color].append(captured_piece.type)
         self.__board.remove(*move_position)
 
     def __en_passant_movement(self, move_position):
         pawn_direction = self.__selected_piece.direction
         if move_position[1] == self.__en_passant_pawn.position[1] + pawn_direction:
-            self.__captured_pieces.append(self.__en_passant_pawn)
+            self.__captured_pieces[self.__en_passant_pawn.color].append(self.__en_passant_pawn.type)
             self.__board.remove(self.__en_passant_pawn)
             self.__en_passant_pawn = 0
 
@@ -284,18 +308,13 @@ class Game:
     def get_game_data(self):
         game = self.__get_board_state()
         turn_player = self.__turn
-        en_passant = "en passant: "
+        en_passant = 0
         if self.__en_passant_pawn != 0:
             en_passant_column, en_passant_line = self.__en_passant_pawn.position
-            en_passant += f"{en_passant_column} {en_passant_line}"
-        else:
-            en_passant += "0"
-        captured_white = [piece.type for piece in self.__captured_pieces if piece.color == "white"]
-        captured_black = [piece.type for piece in self.__captured_pieces if piece.color == "black"]
+            en_passant = en_passant_column, en_passant_line
         game.append(turn_player)
         game.append(en_passant)
-        game.append(captured_white)
-        game.append(captured_black)
+        game.append(self.__captured_pieces)
         return str(game)
 
     def __get_board_state(self):

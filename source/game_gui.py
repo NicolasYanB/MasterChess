@@ -6,7 +6,7 @@ import os
 
 
 class GameGui(tk.Frame):
-    def __init__(self, master):
+    def __init__(self, master, saved_game=None):
         super().__init__(master)
         self.width = self.height = 712
         self.squares = []
@@ -19,7 +19,10 @@ class GameGui(tk.Frame):
         self.canvas = tk.Canvas(self, width=self.width, height=self.height)
         self.canvas.pack()
         self.game = Game()
-        self.game.load_board()
+        if saved_game is None:
+            self.game.load_new_game_board()
+        else:
+            self.game.load_saved_game_board(saved_game)
         self.draw_board()
         self.draw_pieces()
         self.master = master
