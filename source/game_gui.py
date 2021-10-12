@@ -98,10 +98,10 @@ class GameGui(tk.Frame):
             self.unselect()
             return
         moved_piece = self.game.selected_piece
-        self.unselect()
         self.canvas.delete("piece")
         self.draw_pieces()
         self.canvas.delete("check")
+        self.unselect()
         if self.was_promoted(moved_piece):
             promotion_window = PromotionWindow(self, moved_piece)
             promotion_window.mainloop()
