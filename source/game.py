@@ -36,7 +36,7 @@ class Game:
     def turn(self):
         return self.__turn
 
-    def load_new_game_board(self):
+    def init_new_game_board(self):
         piece_types = [Pawn, Knight, Rook, Bishop, Queen, King]
         for color in ("white", "black"):
             for type in piece_types:

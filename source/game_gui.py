@@ -6,11 +6,11 @@ import os
 
 
 class GameGui(tk.Frame):
-    def __init__(self, master, saved_game=None):
+    def __init__(self, master, loaded_game=None):
         super().__init__(master)
         self.width = self.height = 712
         self.squares = []
-        self.stop_game = False
+        self.paused = False
         master.geometry(f"{self.width}x{self.height}")
         master.resizable(False, False)
         master.title("Master Chess")
@@ -19,66 +19,69 @@ class GameGui(tk.Frame):
         self.canvas = tk.Canvas(self, width=self.width, height=self.height)
         self.canvas.pack()
         self.game = Game()
-        if saved_game is None:
-            self.game.load_new_game_board()
+        if loaded_game is None:
+            self.game.init_new_game_board()
         else:
-            self.game.load_saved_game_board(saved_game)
+            self.game.load_saved_game_board(loaded_game)
         self.draw_board()
         self.draw_pieces()
         self.master = master
 
     def draw_board(self):
-        self.square_size = self.width//8
+        self.square_side = self.width//8
         light_square = "#eeeed2"
         dark_square = "#769656"
         colors = [light_square, dark_square]
         color = 0
-        for y in range(0, self.height, self.square_size):
-            for x in range(0, self.width, self.square_size):
-                x0, y0, x1, y1 = x, y, x + self.square_size, y + self.square_size
+        for y in range(0, self.height, self.square_side):
+            for x in range(0, self.width, self.square_side):
+                x0, y0, x1, y1 = x, y, x + self.square_side, y + self.square_side
                 coords = x0, y0, x1, y1
                 square = self.canvas.create_rectangle(coords, fill=colors[color], tags="square")
-                color = abs(color - 1)
+                color = abs(color - 1)  # Change the value from 0 to 1 and vice versa
                 self.squares.append(square)
             colors.reverse()
-        self.canvas.tag_bind("square", "<Button-1>", self.square_event)
+        self.canvas.tag_bind("square", "<Button-1>", self.square_click_event)
 
     def draw_pieces(self):
         self.images = []
         pieces = self.game.board.get_all_pieces()
         for piece in pieces:
             column, line = piece.position
-            margin = 2  # Value to make the piece fits perfectly inside the square
-            x, y = column * self.square_size + margin, line * self.square_size + margin
+            margin = 2  # Distance between the square border and the piece image border
+            x, y = column * self.square_side + margin, line * self.square_side + margin
             image = tk.PhotoImage(file=piece.image)
             self.canvas.create_image(x, y, image=image, anchor=tk.NW, tags="piece")
             self.images.append(image)
-        self.canvas.tag_bind("piece", "<Button-1>", self.piece_event)
-        self.highlight_king_in_check()
+        self.canvas.tag_bind("piece", "<Button-1>", self.piece_click_event)
+        self.highlight_king_in_check()  # In case of saved games resumed
 
-    def square_event(self, event):
-        if self.stop_game:
+    def square_click_event(self, event):
+        if self.paused:
             return
         x, y = event.x, event.y
         square_x, square_y = self.find_square(x, y)
-        square_coords = square_x, square_y, square_x + self.square_size, square_y + self.square_size
+        square_coords = square_x, square_y, square_x + self.square_side, square_y + self.square_side
         enclosed_objects = self.canvas.find_enclosed(*square_coords)
-        for obj in enclosed_objects:
-            if "move" in self.canvas.gettags(obj):
+        for object in enclosed_objects:
+            if "move" in self.canvas.gettags(object):
+                # Move selected piece if there is a element with the tag move inside
+                # the clicked square.
                 self.move_event(event)
                 break
         else:
             self.unselect()
 
-    def piece_event(self, event):
-        if self.stop_game:
+    def piece_click_event(self, event):
+        if self.paused:
             return
         x, y = event.x, event.y
         square_x, square_y = self.find_square(x, y)
-        column, line = int(square_x/self.square_size), int(square_y/self.square_size)
+        column, line = int(square_x/self.square_side), int(square_y/self.square_side)
         clicked_piece = self.game.board.get(column, line)
         if clicked_piece.color != self.game.turn:
             if self.game.selected_piece is not None:
+                # If an opposite piece is clicked move_event will try to capture it
                 self.move_event(event)
             return
         self.unselect()
@@ -86,11 +89,11 @@ class GameGui(tk.Frame):
         self.highlight_piece(square_x, square_y)
 
     def move_event(self, event):
-        if self.stop_game:
+        if self.paused:
             return
         x, y = event.x, event.y
         square_x, square_y = self.find_square(x, y)
-        column, line = int(square_x/self.square_size), int(square_y/self.square_size)
+        column, line = int(square_x/self.square_side), int(square_y/self.square_side)
         move = column, line
         try:
             self.game.move_selected_piece(move)
@@ -115,9 +118,10 @@ class GameGui(tk.Frame):
             self.end_game(game_status)
 
     def end_game(self, game_status):
-        self.stop_game = True
+        self.paused = True
         end_game_window = 0
         if game_status == 1:
+            # The turn change before this method is called, so the winner is the opposite player
             winner = "white" if self.game.turn == "black" else "white"
             end_game_window = CheckmateWindow(self, winner)
         else:
@@ -144,9 +148,9 @@ class GameGui(tk.Frame):
                 return x0, y0
 
     def highlight_piece(self, x, y):
-        border = 3  # Value to make the border fits inside the square
+        border = 3  # Value to make the sides fits inside the square
         x0, y0 = x + border, y + border
-        x1, y1 = x + self.square_size - border, y + self.square_size - border
+        x1, y1 = x + self.square_side - border, y + self.square_side - border
         self.canvas.create_rectangle(x0, y0, x1, y1, outline="#f5cb5c", tags="selected", width=5)
         self.highlight_valid_moves()
 
@@ -154,16 +158,17 @@ class GameGui(tk.Frame):
         valid_moves = self.game.get_selected_piece_moves()
         for move in valid_moves:
             column, line = move
-            x, y = column * self.square_size, line * self.square_size
-            x0, y0, x1, y1 = x, y, x + self.square_size, y + self.square_size
+            x, y = column * self.square_side, line * self.square_side
+            x0, y0, x1, y1 = x, y, x + self.square_side, y + self.square_side
             if not self.game.board.is_empty(column, line):
+                # Highlight a piece that can be captured
                 border = 3
                 x0, y0 = x0 + border, y0 + border
                 x1, y1 = x1 - border, y1 - border
                 coords = x0, y0, x1, y1
                 self.canvas.create_rectangle(coords, outline="#fca311", tags="move", width=5)
                 continue
-            margin = 28  # margin between the square and the circle
+            margin = 28  # margin to center the circle in the square
             x0, y0, x1, y1 = x0 + margin, y0 + margin, x1 - margin, y1 - margin
             self.canvas.create_oval(x0, y0, x1, y1, fill="#f5cb5c", outline="#f5cb5c", tags="move")
         self.canvas.tag_bind("move", "<Button-1>", self.move_event)
@@ -173,10 +178,10 @@ class GameGui(tk.Frame):
         if king == 0:
             return
         column, line = king.position
-        x, y = column * self.square_size, line * self.square_size
+        x, y = column * self.square_side, line * self.square_side
         border = 3
         x0, y0 = x + border, y + border
-        x1, y1 = x + self.square_size - border, y + self.square_size - border
+        x1, y1 = x + self.square_side - border, y + self.square_side - border
         self.canvas.create_rectangle(x0, y0, x1, y1, outline="red", tags="check", width=5)
 
     def unselect(self):
@@ -189,6 +194,7 @@ class GameGui(tk.Frame):
         if len(children) > 1:
             child = children[1]
             if child._w == ".!promotionwindow":
+                # Can't close the game if promotion window is open
                 return
             self.master.destroy()
             return
@@ -201,7 +207,7 @@ class PromotionWindow(tk.Toplevel):
         self.width = self.height = 178
         super().__init__(width=self.width, height=self.height)
         self.master = master
-        self.master.stop_game = True
+        self.master.paused = True
         self.square_side = self.width//2
         self.color = pawn.color
         self.pawn = pawn
@@ -213,6 +219,7 @@ class PromotionWindow(tk.Toplevel):
         self.set_components()
 
     def on_closing(self):
+        # Can't close this window
         pass
 
     def set_components(self):
@@ -266,7 +273,7 @@ class PromotionWindow(tk.Toplevel):
                   "bishop": Bishop, "knight": Knight}
         promoted_piece = pieces[type](self.color, self.pawn.position)
         self.master.promote(self.pawn, promoted_piece)
-        self.master.stop_game = False
+        self.master.paused = False
         self.destroy()
 
 
@@ -281,7 +288,7 @@ class EndGameWindow(tk.Toplevel):
         new_game_btn = tk.Button(self, text="New Game", command=self.start_new_game)
         main_menu_btn = tk.Button(self, text="Main Menu", command=self.return_to_main_menu)
         close_btn = tk.Button(self, text="Exit", command=self.close_all)
-        delta = 110
+        delta = 110  # Distance between each button
         new_game_btn.place(x=x, y=50)
         main_menu_btn.place(x=x+delta, y=50)
         close_btn.place(x=x+delta*2, y=50)
@@ -356,7 +363,7 @@ class SaveGameWindow(tk.Toplevel):
         width = 300
         height = 160
         super().__init__(width=width, height=height)
-        master.stop_game = True
+        master.paused = True
         self.title("Save Game")
         self.resizable(False, False)
         self.master = master
@@ -372,8 +379,8 @@ class SaveGameWindow(tk.Toplevel):
             os.mkdir(path)
 
     def set_components(self):
-        save_game_lbl = tk.Label(self, text="Save the Game?", font="sans-serif 13 bold")
-        save_game_lbl.place(x=75, y=20)
+        save_game_lbl = tk.Label(self, text="Save Game Before Closing?", font="sans-serif 13 bold")
+        save_game_lbl.place(x=15, y=20)
         self.set_entry()
         self.set_buttons()
 

@@ -105,7 +105,7 @@ class LoadGameWindow(tk.Frame):
             game = eval(content)
         self.master.destroy()
         new_root = tk.Tk()
-        game_gui = GameGui(new_root, saved_game=game)
+        game_gui = GameGui(new_root, loaded_game=game)
         game_gui.mainloop()
 
     def remove_preview(self):
