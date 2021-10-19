@@ -37,16 +37,16 @@ class Game:
         return self.__turn
 
     def init_new_game_board(self):
-        piece_types = [Pawn, Knight, Rook, Bishop, Queen, King]
+        piece_classes = [Pawn, Knight, Rook, Bishop, Queen, King]
         for color in ("white", "black"):
-            for type in piece_types:
-                for position in type.initial_positions[color]:
-                    piece = type(color, position)
+            for piece_class in piece_classes:
+                for position in piece_class.initial_positions[color]:
+                    piece = piece_class(color, position)
                     self.__board.add(piece)
 
     def load_saved_game_board(self, game_state):
-        piece_types = {"pawn": Pawn, "knight": Knight, "rook": Rook,
-                       "bishop": Bishop, "queen": Queen, "king": King}
+        piece_classes = {"pawn": Pawn, "knight": Knight, "rook": Rook,
+                         "bishop": Bishop, "queen": Queen, "king": King}
         turn = game_state[-3]
         captured_pieces = game_state[-1]
         self.__captured_pieces = captured_pieces
@@ -55,11 +55,11 @@ class Game:
         pieces = game_state[:-3]
         for piece_data in pieces:
             piece_info = piece_data.split()
-            color, type = piece_info[:2]
+            color, piece_type = piece_info[:2]
             position = int(piece_info[2]), int(piece_info[3])
             moved = eval(piece_info[-1])
-            piece_type = piece_types[type]
-            piece = piece_type(color, position)
+            piece_class = piece_classes[piece_type]
+            piece = piece_class(color, position)
             piece.moved = moved
             self.__board.add(piece)
         # Check if there's a pawn that can suffer an en passant

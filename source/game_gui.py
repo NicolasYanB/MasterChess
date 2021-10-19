@@ -268,10 +268,10 @@ class PromotionWindow(tk.Toplevel):
             if piece in tags:
                 self.promote_to(piece)
 
-    def promote_to(self, type):
+    def promote_to(self, piece_type):
         pieces = {"queen": Queen, "rook": Rook,
                   "bishop": Bishop, "knight": Knight}
-        promoted_piece = pieces[type](self.color, self.pawn.position)
+        promoted_piece = pieces[piece_type](self.color, self.pawn.position)
         self.master.promote(self.pawn, promoted_piece)
         self.master.paused = False
         self.destroy()
