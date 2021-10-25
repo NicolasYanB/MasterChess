@@ -23,6 +23,8 @@ class MainMenu(tk.Frame):
         img = Image.open(img_path)
         resized_img = img.resize((self.width, self.height), Image.ANTIALIAS)
         background = ImageTk.PhotoImage(resized_img)
+        # A reference to the image needs to be kept, otherwise, the garbage collector
+        # would destroy it
         self.canvas.background = background
         self.canvas.create_image(0, 0, anchor=tk.NW, image=background)
 
@@ -40,7 +42,7 @@ class MainMenu(tk.Frame):
 
     def start_new_game(self):
         from source import GameGui
-        self.master.destroy()
+        self.master.destroy()  # Destroy old root
         new_root = tk.Tk()
         game_gui = GameGui(new_root)
         game_gui.mainloop()

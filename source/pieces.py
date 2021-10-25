@@ -30,13 +30,15 @@ class Piece:
         pass
 
     def _is_possible(self, move):
+        # Check if the move is possible inside the board
         move_column, move_line = move
-        column, line = self._position
         if move_column > 7 or move_column < 0:
+            # Return false if move_column is out of the board
             return False
         if move_line > 7 or move_line < 0:
+            # Return false if move_line is out of the board
             return False
-        if (move_column, move_line) == (column, line):
+        if move == self._position:
             return False
         return True
 
@@ -48,6 +50,7 @@ class Pawn(Piece):
     def __init__(self, color, position):
         type = "pawn"
         super().__init__(type, color, position)
+        # If the pawn is white, it moves up (-1), if it's black, it moves down (1)
         self.__direction = -1 if color == "white" else 1
 
     @property
@@ -60,10 +63,11 @@ class Pawn(Piece):
         normal_move = column, line + self.__direction
         if self._is_possible(normal_move) and board.is_empty(*normal_move):
             moves.append(normal_move)
-            double_move = column, line + self.__direction * 2
+            double_move = column, line + self.__direction * 2  # Pawn move that advance two squares
             if not self.moved and self._is_possible(double_move) and board.is_empty(*double_move):
                 moves.append(double_move)
         for x in (1, -1):
+            # Check on each adjacent diagonal if there's an enemy piece to capture
             capture_move = column + x, line + self.__direction
             if self._is_possible(capture_move) and not board.is_empty(*capture_move):
                 piece = board.get(*capture_move)
@@ -83,6 +87,8 @@ class Knight(Piece):
     def get_possible_moves(self, board):
         column, line = self._position
         moves = []
+        # For each move, the difference between the current column and line
+        # and the column and line of the possible move
         deltas = [(-1, -2), (1, -2), (-1, 2), (1, 2), (-2, -1), (-2, 1), (2, -1), (2, 1)]
         for x, y in deltas:
             move = column + x, line + y
