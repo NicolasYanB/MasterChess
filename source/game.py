@@ -346,6 +346,10 @@ class Game:
         return 0
 
     def get_game_data(self):
+        # Returns a list with all the information necessary to save the game in
+        # the following structure:
+        # [all pieces in the board (color, type, column, line, number of valid moves, moved),
+        # turn player, en passant pawn, captured pieces]
         game = self.__get_board_state()
         turn_player = self.__turn
         en_passant = 0
