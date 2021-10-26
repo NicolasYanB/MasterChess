@@ -251,9 +251,3 @@ class CapturedPiecesField(tk.Canvas):
                 line += 1
             else:
                 column += 1
-
-
-if __name__ == '__main__':
-    root = tk.Tk()
-    load_game_window = LoadGameWindow(root)
-    load_game_window.mainloop()

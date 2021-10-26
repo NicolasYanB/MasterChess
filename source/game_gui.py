@@ -410,9 +410,3 @@ class SaveGameWindow(tk.Toplevel):
 
     def no_btn_event(self):
         self.master.master.destroy()
-
-
-if __name__ == '__main__':
-    root = tk.Tk()
-    game_gui = GameGui(root)
-    game_gui.mainloop()
