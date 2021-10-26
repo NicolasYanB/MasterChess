@@ -1,4 +1,5 @@
 from multipledispatch import dispatch
+
 from source import Pawn, Knight, Rook, Bishop, Queen, King
 
 

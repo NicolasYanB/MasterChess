@@ -1,8 +1,9 @@
-import tkinter as tk
-from source import Game, InvalidMoveException
-from source import Queen, Rook, Bishop, Knight
 from datetime import datetime
+import tkinter as tk
 import os
+
+from source import Queen, Rook, Bishop, Knight
+from source import Game, InvalidMoveException
 
 
 class GameGui(tk.Frame):

@@ -1,6 +1,7 @@
 import tkinter as tk
-from PIL import Image, ImageTk
 import os
+
+from PIL import Image, ImageTk
 
 
 class MainMenu(tk.Frame):
