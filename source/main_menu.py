@@ -11,6 +11,8 @@ class MainMenu(tk.Frame):
         master.geometry(f"{self.width}x{self.height}")
         master.resizable(False, False)
         master.title("Master Chess")
+        icon = tk.PhotoImage(file="images/icon.png")
+        master.iconphoto(False, icon)
         self.pack()
         self.canvas = tk.Canvas(self, width=self.width, height=self.height)
         self.canvas.pack()

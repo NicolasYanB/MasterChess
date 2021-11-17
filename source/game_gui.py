@@ -15,6 +15,8 @@ class GameGui(tk.Frame):
         master.geometry(f"{self.width}x{self.height}")
         master.resizable(False, False)
         master.title("Master Chess")
+        icon = tk.PhotoImage(file="images/icon.png")
+        master.iconphoto(False, icon)
         master.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.pack(expand=True, fill=tk.BOTH)
         self.canvas = tk.Canvas(self, width=self.width, height=self.height)
@@ -212,6 +214,8 @@ class PromotionWindow(tk.Toplevel):
         self.square_side = self.width//2
         self.color = pawn.color
         self.pawn = pawn
+        icon = tk.PhotoImage(file="images/icon.png")
+        self.iconphoto(False, icon)
         self.title("Promotion")
         self.resizable(False, False)
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -283,6 +287,8 @@ class EndGameWindow(tk.Toplevel):
         super().__init__(width=width, height=height)
         self.master = master
         self.resizable(False, False)
+        icon = tk.PhotoImage(file="images/icon.png")
+        self.iconphoto(False, icon)
         self.protocol("WM_DELETE_WINDOW", self.close_all)
 
     def set_buttons(self, x):

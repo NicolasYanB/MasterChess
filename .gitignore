@@ -2,3 +2,8 @@ venv/*
 .vscode/*
 */__pycache__/*
 *.todo
+MasterChess.AppDir/*
+build/*
+dist/*
+*.spec
+*.AppImage

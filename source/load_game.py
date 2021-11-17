@@ -11,6 +11,8 @@ class LoadGameWindow(tk.Frame):
         master.geometry(f"{width}x{height}")
         master.resizable(False, False)
         master.title("Load Game")
+        icon = tk.PhotoImage(file="images/icon.png")
+        master.iconphoto(False, icon)
         self.master = master
         home_dir = os.path.expanduser('~')
         self.game_dir = f"{home_dir}/.MasterChess"
