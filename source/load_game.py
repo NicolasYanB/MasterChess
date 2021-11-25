@@ -2,6 +2,7 @@ import tkinter as tk
 import os
 
 from source import MainMenu, GameGui
+from source import realpath
 
 
 class LoadGameWindow(tk.Frame):
@@ -11,7 +12,7 @@ class LoadGameWindow(tk.Frame):
         master.geometry(f"{width}x{height}")
         master.resizable(False, False)
         master.title("Load Game")
-        icon = tk.PhotoImage(file="images/icon.png")
+        icon = tk.PhotoImage(file=f"{realpath}/images/icon.png")
         master.iconphoto(False, icon)
         self.master = master
         home_dir = os.path.expanduser('~')
@@ -31,7 +32,7 @@ class LoadGameWindow(tk.Frame):
         self.listbox_frame.set_on_select_event(self.listbox_on_select)
 
     def set_back_button(self):
-        image_path = "images/back.png"
+        image_path = f"{realpath}/images/back.png"
         self.btn_image = tk.PhotoImage(file=image_path)
         back_btn = tk.Button(self, image=self.btn_image, command=self.back_to_main_menu)
         back_btn.place(x=5, y=0)
@@ -152,7 +153,7 @@ class BoardPreview(tk.Canvas):
             color = piece[0]
             piece_type = piece[1]
             column, line = piece[2:]
-            image_path = f"images/mini-pieces/{color}/{piece_type}.png"
+            image_path = f"{realpath}/images/mini-pieces/{color}/{piece_type}.png"
             x, y = column * self.square_size, line * self.square_size
             image = tk.PhotoImage(file=image_path)
             self.create_image(x, y, image=image, anchor=tk.NW)
@@ -243,7 +244,7 @@ class CapturedPiecesField(tk.Canvas):
         column = line = 0
         piece_size = 13
         for piece in pieces:
-            img_path = f"images/mini-pieces/{self.color}/{piece}.png"
+            img_path = f"{realpath}/images/mini-pieces/{self.color}/{piece}.png"
             image = tk.PhotoImage(file=img_path)
             x, y = column * piece_size, line * piece_size
             self.create_image(x, y, image=image, anchor=tk.NW)

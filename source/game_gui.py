@@ -4,6 +4,7 @@ import os
 
 from source import Queen, Rook, Bishop, Knight
 from source import Game, InvalidMoveException
+from source import realpath
 
 
 class GameGui(tk.Frame):
@@ -15,7 +16,7 @@ class GameGui(tk.Frame):
         master.geometry(f"{self.width}x{self.height}")
         master.resizable(False, False)
         master.title("Master Chess")
-        icon = tk.PhotoImage(file="images/icon.png")
+        icon = tk.PhotoImage(file=f"{realpath}/images/icon.png")
         master.iconphoto(False, icon)
         master.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.pack(expand=True, fill=tk.BOTH)
@@ -53,7 +54,7 @@ class GameGui(tk.Frame):
             column, line = piece.position
             margin = 2  # Distance between the square border and the piece image border
             x, y = column * self.square_side + margin, line * self.square_side + margin
-            image = tk.PhotoImage(file=piece.image)
+            image = tk.PhotoImage(file=realpath + '/' + piece.image)
             self.canvas.create_image(x, y, image=image, anchor=tk.NW, tags="piece")
             self.images.append(image)
         self.canvas.tag_bind("piece", "<Button-1>", self.piece_click_event)

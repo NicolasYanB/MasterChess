@@ -3,6 +3,10 @@ import os
 
 from PIL import Image, ImageTk
 
+realpath = __file__.split('/')
+dir_index = realpath.index("MasterChess")
+realpath = '/'.join(realpath[:dir_index+1])
+
 
 class MainMenu(tk.Frame):
     def __init__(self, master):
@@ -11,7 +15,7 @@ class MainMenu(tk.Frame):
         master.geometry(f"{self.width}x{self.height}")
         master.resizable(False, False)
         master.title("Master Chess")
-        icon = tk.PhotoImage(file="images/icon.png")
+        icon = tk.PhotoImage(file=f"{realpath}/images/icon.png")
         master.iconphoto(False, icon)
         self.pack()
         self.canvas = tk.Canvas(self, width=self.width, height=self.height)
@@ -22,7 +26,7 @@ class MainMenu(tk.Frame):
         self.set_buttons()
 
     def set_background(self):
-        img_path = "images/background.png"
+        img_path = f"{realpath}/images/background.png"
         img = Image.open(img_path)
         resized_img = img.resize((self.width, self.height), Image.ANTIALIAS)
         background = ImageTk.PhotoImage(resized_img)
