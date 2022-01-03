@@ -12,13 +12,30 @@ class InvalidMoveException(Exception):
 
 
 class Game:
+    """
+    Class than handle the game logic
+
+    Responsible for things like move validation, test whether a pawn can make an en passant,
+    check if any king is in check, and more.
+
+    Attributes:
+        board (game.Board): object that handle the pieces positions on the board
+        selected_piece (piece.Piece): piece selected by the user
+        captured_pieces (Dict[str, List[piece.Piece]]): pieces that was captured sorted by color
+        turn (str): player that makes the next move
+        en_passant_pawn (piece.Piece): pawn that can suffer en passant on the next turn
+        history (List[str]): stores board states that are relevant to check whether threefold
+            repetition occurred or not
+        fifty_moves_counter (int): count how much moves occurred without a pawn movement or a
+            capture
+    """
     def __init__(self):
         self.__board = Board()
         self.__selected_piece = None
         self.__captured_pieces = {"white": [], "black": []}
         self.__turn = "white"
-        self.__en_passant_pawn = 0  # Pawn that can suffer en passant on the next turn
-        self.__history = []  # Store board states to check whether threefold repetition occurred
+        self.__en_passant_pawn = 0
+        self.__history = []
         self.__fifty_moves_counter = 0
 
     @property
@@ -38,6 +55,7 @@ class Game:
         return self.__turn
 
     def init_new_game_board(self):
+        """Initialize a board with all pieces in their initial positions"""
         piece_classes = [Pawn, Knight, Rook, Bishop, Queen, King]
         for color in ("white", "black"):
             for piece_class in piece_classes:
@@ -46,6 +64,12 @@ class Game:
                     self.__board.add(piece)
 
     def load_saved_game_board(self, game_state):
+        """
+        Initialize a board of a game that didn't end
+
+        Args:
+            game_state (List[object]): list of pieces of information about the game
+        """
         piece_classes = {"pawn": Pawn, "knight": Knight, "rook": Rook,
                          "bishop": Bishop, "queen": Queen, "king": King}
         turn = game_state[-3]
@@ -77,6 +101,13 @@ class Game:
                 break
 
     def select_piece(self, column, line):
+        """
+        Put a piece in given column and line as the selected pieces
+
+        Args:
+            column (int): column which the piece is positioned
+            line (int): line which the piece is positioned
+        """
         if self.__board.is_empty(column, line):
             raise ValueError("There's not a piece in this position")
         piece = self.__board.get(column, line)
@@ -91,6 +122,12 @@ class Game:
         return self.__get_valid_moves(self.__selected_piece)
 
     def __get_valid_moves(self, piece):
+        """
+        Get all the valid moves that a given piece can make
+
+        Args:
+            piece (piece.Piece):
+        """
         # Remove moves that would let king in check from get_possible_moves
         # and add castling or en passant if is necessary
         piece_possible_moves = piece.get_possible_moves(self.__board)

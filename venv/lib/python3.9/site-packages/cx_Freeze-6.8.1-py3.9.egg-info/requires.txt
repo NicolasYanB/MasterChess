@@ -1,0 +1,4 @@
+importlib-metadata>=4.3.1
+
+[:sys_platform == "win32"]
+cx-logging>=3.0

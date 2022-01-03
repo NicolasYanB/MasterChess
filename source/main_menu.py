@@ -5,10 +5,15 @@ from PIL import Image, ImageTk
 
 realpath = __file__.split('/')
 dir_index = realpath.index("MasterChess")
-realpath = '/'.join(realpath[:dir_index+1])
+realpath = '/'.join(realpath[:dir_index+1])  # Path to the script directory 'MasterChess'
 
 
 class MainMenu(tk.Frame):
+    """
+    First window to appear to the user.
+    Gives two options: Start a new game or resume an unfinished game
+    """
+
     def __init__(self, master):
         super().__init__(master)
         self.width, self.height = 350, 300
@@ -21,21 +26,22 @@ class MainMenu(tk.Frame):
         self.canvas = tk.Canvas(self, width=self.width, height=self.height)
         self.canvas.pack()
         self.master = master
-        self.set_background()
+        self.set_background_img()
         self.create_game_directory()
         self.set_buttons()
 
-    def set_background(self):
+    def set_background_img(self):
         img_path = f"{realpath}/images/background.png"
         img = Image.open(img_path)
         resized_img = img.resize((self.width, self.height), Image.ANTIALIAS)
         background = ImageTk.PhotoImage(resized_img)
-        # A reference to the image needs to be kept, otherwise, the garbage collector
-        # would destroy it
-        self.canvas.background = background
+        self.canvas.background = background  # reference
         self.canvas.create_image(0, 0, anchor=tk.NW, image=background)
 
     def create_game_directory(self):
+        """
+        Creates the directory that the saved games will be stored
+        """
         home = os.path.expanduser('~')
         path = f"{home}/.MasterChess"
         if not os.path.exists(path):
