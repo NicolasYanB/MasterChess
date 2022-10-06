@@ -13,7 +13,7 @@ class InvalidMoveException(Exception):
 
 class Game:
     """
-    Class than handle the game logic
+    Class that handle the game logic
 
     Responsible for things like move validation, test whether a pawn can make an en passant,
     check if any king is in check, and more.
@@ -119,6 +119,10 @@ class Game:
         self.__selected_piece = None
 
     def get_selected_piece_moves(self):
+        """
+        Returns a list of int tuples of 2 elements. The first element is the column, the second is
+        the line of the square that the piece can move to
+        """
         return self.__get_valid_moves(self.__selected_piece)
 
     def __get_valid_moves(self, piece):
@@ -126,7 +130,13 @@ class Game:
         Get all the valid moves that a given piece can make
 
         Args:
-            piece (piece.Piece):
+            piece (piece.Piece)
+
+        Returns:
+            list of int tuples of 2 elements. The first element is the column, the second is the
+            line of the square that the piece can move to. For example:
+
+            [(1, 1), (1, 2), (2, 1)]
         """
         # Remove moves that would let king in check from get_possible_moves
         # and add castling or en passant if is necessary
@@ -144,6 +154,13 @@ class Game:
         return piece_valid_moves
 
     def __get_en_passant(self, piece):
+        """
+        Returns True if the piece can make an en passant on the next move. And returns false if
+        the piece cannot or isn't a pawn
+
+        Args:
+            piece (piece.Piece)
+        """
         if piece.type != "pawn":
             return False
         column, line = piece.position
@@ -162,6 +179,13 @@ class Game:
         return False
 
     def __get_castling(self, piece):
+        """
+        Returns True if the piece can make a castle. Returns False if the piece cannot or isn't
+        the king
+
+        Args:
+            piece (piece.Piece)
+        """
         if piece.type != "king" or piece.moved:
             return False
         if piece.in_check:
@@ -192,6 +216,16 @@ class Game:
         return castling_moves
 
     def __let_king_vulnerable(self, piece, move):
+        """
+        Check if the king would de in check if piece make a given move
+
+        Args:
+            piece (Piece.piece)
+            move (Tuple[int, int]): position of the move that would be performed by piece
+
+        Returns:
+            A boolean value that represents whether the king would be in check after this move
+        """
         # Create a copy of the board to simulate the move and check if the king would be
         # in check after it
         from copy import deepcopy
@@ -209,6 +243,12 @@ class Game:
         return self.__is_in_check(ally_king, board=board_copy)
 
     def move_selected_piece(self, destination):
+        """
+        Perform the movement of the selected piece to a given destination
+
+        Args:
+            destination (Tuple[int, int]): square that the selected piece will move to
+        """
         self.__fifty_moves_counter += 0.5
         selected_piece_valid_moves = self.__get_valid_moves(self.__selected_piece)
         if destination not in selected_piece_valid_moves:
@@ -234,13 +274,25 @@ class Game:
         self.__turn = "black" if self.__turn == "white" else "white"
 
     def __capture(self, move_position):
+        """
+        Remove the piece on the given position and add it to the captured_pieces list
+
+        Args:
+            move_position (Tuple[int, int]): position of the deleted piece
+        """
         column, line = move_position
         captured_piece = self.__board.get(column, line)
         self.__captured_pieces[captured_piece.color].append(captured_piece.type)
         self.__board.remove(column, line)
 
     def __en_passant(self, move_position):
-        # Remove en passant pawn if all the conditions are true, otherwise, does nothing
+        """
+        Check if the movement performed is an en passant. If it is, remove en_passant_pawn and
+        append it to the captured pieces list
+
+        Args:
+            move_position (Tuple[int, int]): position that selected_piece will move to
+        """
         pawn_column, pawn_line = self.__selected_piece.position
         en_passant_pawn = self.__en_passant_pawn
         en_passant_pawn_column, en_passant_pawn_line = en_passant_pawn.position
@@ -253,6 +305,13 @@ class Game:
             self.__en_passant_pawn = 0
 
     def __castling(self, move_position):
+        """
+        Check if the movement performed is a castle. If it is, move the castle rook to it's
+        correspondent position
+
+        Args:
+            move_position (Tuple[int, int]): position that selected_piece will move to
+        """
         # Do the castling if the distance between the king and the point to move is 2
         move_delta = self.__selected_piece.position[0] - move_position[0]
         distance = abs(self.__selected_piece.position[0] - move_position[0])
@@ -265,7 +324,16 @@ class Game:
             self.__board.move(castling_rook, rook_movement)
 
     def post_movement_actions(self):
-        # Method that is called after the movement of a piece
+        """
+        Game processes that occurs after the move:
+            - Check if any king is in check
+            - store the current game board state
+            - check if the game ended
+
+        Returns:
+            True if the game has ended (in draw or with one player winning), otherwise,
+            return False
+        """
         kings = self.__board.get_all("king")
         for king in kings:
             if self.__is_in_check(king):
@@ -277,8 +345,10 @@ class Game:
         return self.__get_game_status()
 
     def __get_game_status(self):
-        # Return 0 if the game didn't end, otherwise, return other number between 1 and 5
-        # depending on how the game ended
+        """
+        Return 0 if the game didn't end, otherwise, return other number between 1 and 5
+        depending on how the game ended
+        """
         if self.__is_checkmate():
             return 1
         if self.__is_stalemate():
@@ -292,6 +362,7 @@ class Game:
         return 0
 
     def __is_checkmate(self):
+        """Return True if any king suffered a check mate"""
         pieces = self.__board.get_all_where(color=self.__turn)
         king = self.__board.get_all("king", color=self.__turn)[0]
         for piece in pieces:
@@ -302,6 +373,7 @@ class Game:
         return False
 
     def __is_stalemate(self):
+        """Return True if any king suffered a stealmete"""
         pieces = self.__board.get_all_where(color=self.__turn)
         for piece in pieces:
             if len(self.__get_valid_moves(piece)) > 0:
@@ -309,7 +381,7 @@ class Game:
         return True
 
     def __is_threefold_repetition(self):
-        # Return true if the current board state occurred twice before
+        """Return true if the current board state occurred twice before"""
         if len(self.__history) < 3:
             return False
         actual_status = self.__history[-1]
@@ -322,6 +394,7 @@ class Game:
         return False
 
     def __is_insufficient_material(self):
+        """Return True if any player don't have pieces enough to make a checkmate"""
         white_pieces = self.__board.get_all_where(color="white")
         black_pieces = self.__board.get_all_where(color="black")
         all_pieces = white_pieces + black_pieces
@@ -348,6 +421,15 @@ class Game:
         return False
 
     def __find_castling_rook(self, king_destination):
+        """
+        Return the rook that will be moved on castle given the king final destination.
+
+        Args:
+            king_destination (Tuple[int, int]): king position after the castle
+
+        Returns:
+            a rook object (pieces.Rook)
+        """
         column, line = king_destination
         if column == 2:
             rook_column = 0
@@ -357,6 +439,14 @@ class Game:
         return rook
 
     def __is_susceptible_to_en_passant(self, piece, move):
+        """
+        Return True if a given piece is a pawn and can suffer an en passant during the next
+        opponent turn.
+
+        Args:
+            piece (pieces.Piece): piece that will be moved
+            move (Tuple[int, int]): movement that the piece will make
+        """
         if piece.type != "pawn":
             return False
         if piece.moved:
@@ -367,6 +457,13 @@ class Game:
         return distance_travelled == 2
 
     def __is_in_check(self, king, board=None):
+        """
+        Return True the given king is in check.
+
+        Args:
+            king (pieces.King): king that maybe is in check
+            board (game.Board): board object that contains the king. Defaults to None
+        """
         if board is None:
             board = self.__board
         enemy_color = "black" if king.color == "white" else "white"
@@ -377,6 +474,9 @@ class Game:
         return False
 
     def get_king_in_check(self):
+        """
+        Return the king in check or 0 if there isn't any.
+        """
         kings = self.__board.get_all("king")
         for king in kings:
             if king.in_check:
@@ -384,10 +484,12 @@ class Game:
         return 0
 
     def get_game_data(self):
-        # Returns a list with all the information necessary to save the game in
-        # the following structure:
-        # [all pieces in the board (color, type, column, line, number of valid moves, moved),
-        # turn player, en passant pawn, captured pieces]
+        """
+        Returns a list with all the information necessary to save the game. And it have
+        the following structure:
+            [all pieces in the board (color, type, column, line, number of valid moves, moved),
+            turn player, en passant pawn, captured pieces]
+        """
         game = self.__get_board_state()
         turn_player = self.__turn
         en_passant = 0
